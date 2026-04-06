@@ -1,0 +1,1509 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard de Talento — Italcol</title>
+<style>
+:root {
+  --font-sans: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-serif: Georgia, serif;
+  --font-mono: 'Courier New', monospace;
+  --color-background-primary: #ffffff;
+  --color-background-secondary: #f5f5f3;
+  --color-background-tertiary: #efefec;
+  --color-text-primary: #1a1a1a;
+  --color-text-secondary: #6b6b6b;
+  --color-text-tertiary: #9b9b9b;
+  --color-border-tertiary: rgba(0,0,0,0.12);
+  --color-border-secondary: rgba(0,0,0,0.18);
+  --color-border-primary: rgba(0,0,0,0.25);
+  --border-radius-sm: 4px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 12px;
+  --border-radius-xl: 16px;
+
+  /* Pendientes — paleta dedicada */
+  --pending-bg: #FFF8ED;
+  --pending-border: rgba(232,99,26,0.25);
+  --pending-dot: #E8631A;
+  --pending-text: #7B3A0A;
+  --pending-badge-bg: rgba(232,99,26,0.12);
+  --pending-badge-border: rgba(232,99,26,0.3);
+}
+
+/* ── ANIMACIÓN PENDIENTES ── */
+@keyframes pulse-ring {
+  0%   { box-shadow: 0 0 0 0 rgba(232,99,26,0.35); }
+  70%  { box-shadow: 0 0 0 6px rgba(232,99,26,0); }
+  100% { box-shadow: 0 0 0 0 rgba(232,99,26,0); }
+}
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+.pending-shimmer {
+  background: linear-gradient(90deg,
+    var(--pending-bg) 25%,
+    rgba(232,99,26,0.08) 50%,
+    var(--pending-bg) 75%
+  );
+  background-size: 200% auto;
+  animation: shimmer 2.5s linear infinite;
+}
+.pending-dot-pulse {
+  animation: pulse-ring 2s ease-out infinite;
+}
+</style>
+</head>
+<body>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--font-sans);background:var(--color-background-tertiary);}
+.db{padding:14px;}
+.db-header{background:#1B2A6B;border-radius:var(--border-radius-lg);padding:12px 18px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;}
+.db-title{font-size:14px;font-weight:500;color:#fff;}
+.db-sub{font-size:10px;color:rgba(255,255,255,0.6);margin-top:2px;}
+.db-logo{font-size:11px;font-weight:500;color:#E8631A;background:rgba(232,99,26,0.15);padding:3px 10px;border-radius:20px;}
+.kpi-row{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px;margin-bottom:12px;}
+.kpi{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:9px 12px;cursor:pointer;}
+.kpi-label{font-size:10px;color:var(--color-text-secondary);margin-bottom:3px;}
+.kpi-val{font-size:20px;font-weight:500;color:var(--color-text-primary);line-height:1;}
+.kpi-sub{font-size:10px;color:var(--color-text-secondary);margin-top:2px;}
+.kpi-bar{height:3px;border-radius:2px;margin-top:5px;background:var(--color-background-secondary);}
+.company-btn.active{background:#fff!important;color:#1B2A6B!important;}
+.company-btn:not(.active){background:transparent!important;color:rgba(255,255,255,0.7)!important;}
+
+.nav-tabs{display:flex;gap:5px;margin-bottom:12px;border-bottom:0.5px solid var(--color-border-tertiary);padding-bottom:8px;}
+.nav-tab{font-size:11px;padding:5px 12px;border-radius:20px;border:0.5px solid var(--color-border-secondary);background:var(--color-background-secondary);color:var(--color-text-secondary);cursor:pointer;white-space:nowrap;}
+.nav-tab.active{background:#1B2A6B;color:#fff;border-color:#1B2A6B;font-weight:500;}
+
+.main-row{display:grid;grid-template-columns:1fr 310px;gap:10px;align-items:start;}
+.chart-card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:12px;}
+.chart-top{display:flex;align-items:center;gap:6px;margin-bottom:8px;flex-wrap:wrap;}
+.section-label{font-size:12px;font-weight:500;color:var(--color-text-primary);}
+.pill{font-size:10px;padding:2px 8px;border-radius:20px;border:0.5px solid var(--color-border-secondary);background:var(--color-background-secondary);color:var(--color-text-secondary);cursor:pointer;white-space:nowrap;}
+.pill.active{background:#1B2A6B;color:#fff;border-color:#1B2A6B;}
+.mode-toggle{display:flex;gap:4px;margin-left:auto;}
+.mode-btn{font-size:10px;padding:3px 8px;border-radius:12px;border:0.5px solid var(--color-border-secondary);background:var(--color-background-secondary);color:var(--color-text-secondary);cursor:pointer;}
+.mode-btn.active{background:#1B2A6B;color:#fff;border-color:#1B2A6B;}
+.scatter-wrap{position:relative;}
+.nb-tooltip{position:absolute;background:var(--color-background-primary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:7px 10px;font-size:11px;pointer-events:none;display:none;z-index:20;min-width:155px;color:var(--color-text-primary);}
+
+.right-col{display:flex;flex-direction:column;gap:8px;}
+.panel{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:12px;}
+.panel-title{font-size:12px;font-weight:500;color:var(--color-text-primary);margin-bottom:8px;}
+.person-row{display:flex;align-items:center;gap:7px;padding:4px 5px;border-radius:var(--border-radius-md);cursor:pointer;border:0.5px solid transparent;}
+.person-row:hover{background:var(--color-background-secondary);}
+.person-row.selected{background:var(--color-background-secondary);border-color:var(--color-border-secondary);}
+.person-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.person-name{font-size:11px;color:var(--color-text-primary);flex:1;}
+.person-score{font-size:10px;color:var(--color-text-secondary);}
+
+/* ── FILA PENDIENTE en lista ── */
+.pending-row{
+  display:flex;align-items:center;gap:7px;
+  padding:5px 7px;
+  border-radius:var(--border-radius-md);
+  border:0.5px dashed var(--pending-border);
+  background:var(--pending-bg);
+  margin-bottom:3px;
+  position:relative;
+  overflow:hidden;
+}
+.pending-row .pending-dot-pulse{
+  width:8px;height:8px;border-radius:50%;
+  background:var(--pending-dot);
+  flex-shrink:0;
+}
+.pending-row .pending-name{
+  font-size:11px;color:var(--pending-text);flex:1;
+}
+.pending-row .pending-badge{
+  font-size:9px;
+  padding:1px 6px;
+  border-radius:8px;
+  background:var(--pending-badge-bg);
+  border:0.5px solid var(--pending-badge-border);
+  color:var(--pending-dot);
+  white-space:nowrap;
+  font-weight:500;
+}
+
+/* ── PANEL PENDIENTES ── */
+.pending-panel-header{
+  display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;
+}
+.pending-panel-title{
+  font-size:11px;font-weight:600;color:var(--pending-text);
+  display:flex;align-items:center;gap:5px;
+}
+.pending-panel-count{
+  font-size:10px;font-weight:700;
+  background:var(--pending-dot);color:#fff;
+  border-radius:10px;padding:1px 7px;
+}
+.pending-progress-bar{
+  height:4px;border-radius:3px;
+  background:var(--color-background-secondary);
+  margin-bottom:10px;overflow:hidden;
+}
+.pending-progress-fill{
+  height:100%;border-radius:3px;
+  background:linear-gradient(90deg,#E8631A,#f0914a);
+  transition:width 0.6s ease;
+}
+.pending-card{
+  display:flex;align-items:center;gap:8px;
+  padding:7px 9px;
+  border-radius:var(--border-radius-md);
+  border:0.5px dashed var(--pending-border);
+  margin-bottom:5px;
+  position:relative;overflow:hidden;
+}
+.pending-card-num{
+  width:20px;height:20px;border-radius:50%;
+  background:var(--pending-badge-bg);
+  border:0.5px solid var(--pending-border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:9px;font-weight:700;color:var(--pending-dot);
+  flex-shrink:0;
+}
+.pending-card-name{
+  font-size:11px;font-weight:500;color:var(--pending-text);flex:1;
+}
+.pending-card-tag{
+  font-size:9px;padding:1px 6px;border-radius:8px;
+  background:var(--pending-badge-bg);
+  border:0.5px solid var(--pending-border);
+  color:var(--pending-dot);white-space:nowrap;
+}
+/* ── BANNER DE PENDIENTES EN NINE BOX ── */
+.nb-pending-banner{
+  display:flex;align-items:center;gap:10px;
+  padding:8px 12px;
+  background:var(--pending-bg);
+  border:0.5px dashed var(--pending-border);
+  border-radius:var(--border-radius-md);
+  margin-top:8px;
+}
+.nb-pending-dots{display:flex;gap:3px;align-items:center;}
+.nb-pending-dot{
+  width:8px;height:8px;border-radius:50%;
+  background:var(--pending-dot);opacity:0.4;
+  flex-shrink:0;
+}
+.nb-pending-dot:nth-child(1){opacity:0.9;}
+.nb-pending-dot:nth-child(2){opacity:0.65;}
+.nb-pending-dot:nth-child(3){opacity:0.4;}
+
+/* ── DEMÁS ESTILOS ORIGINALES ── */
+.profile-empty{text-align:center;padding:20px;color:var(--color-text-secondary);font-size:11px;}
+.avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:500;font-size:13px;flex-shrink:0;}
+.profile-hdr{display:flex;align-items:center;gap:9px;margin-bottom:10px;}
+.profile-name{font-size:13px;font-weight:500;color:var(--color-text-primary);}
+.zone-badge{display:inline-block;font-size:10px;padding:2px 7px;border-radius:10px;font-weight:500;margin-top:2px;}
+.scores-2{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:8px;}
+.score-item{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:6px 8px;}
+.score-lbl{font-size:10px;color:var(--color-text-secondary);margin-bottom:2px;}
+.score-val{font-size:15px;font-weight:500;}
+.divider{height:0.5px;background:var(--color-border-tertiary);margin:7px 0;}
+.bar-row{margin-bottom:4px;}
+.bar-lbl{display:flex;justify-content:space-between;font-size:10px;color:var(--color-text-secondary);margin-bottom:2px;}
+.bar-track{height:4px;background:var(--color-background-secondary);border-radius:3px;}
+.bar-fill{height:100%;border-radius:3px;}
+.insight{font-size:11px;line-height:1.5;padding:7px 9px;border-radius:var(--border-radius-md);margin-top:7px;}
+.comp-4{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:6px;}
+.comp-item{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:5px 7px;}
+.comp-lbl{font-size:9px;color:var(--color-text-secondary);}
+.comp-val{font-size:12px;font-weight:500;color:var(--color-text-primary);}
+.wpi-section{margin-top:0;}
+.wpi-dim{margin-bottom:10px;}
+.wpi-dim-title{font-size:10px;font-weight:500;padding:3px 8px;border-radius:var(--border-radius-md);margin-bottom:5px;display:inline-block;}
+.wpi-bars{display:grid;gap:3px;}
+.wpi-bar-row{display:flex;align-items:center;gap:6px;}
+.wpi-bar-name{font-size:9px;color:var(--color-text-secondary);width:110px;flex-shrink:0;text-align:right;}
+.wpi-bar-track{flex:1;height:8px;background:var(--color-background-secondary);border-radius:4px;overflow:hidden;}
+.wpi-bar-fill{height:100%;border-radius:4px;}
+.wpi-bar-val{font-size:9px;font-weight:500;width:16px;text-align:right;}
+.pdi-section{}
+.ruta-card{border-radius:var(--border-radius-lg);border:0.5px solid var(--color-border-tertiary);overflow:hidden;margin-bottom:8px;}
+.ruta-header{padding:8px 12px;display:flex;align-items:center;gap:8px;}
+.ruta-num{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;flex-shrink:0;}
+.ruta-title{font-size:12px;font-weight:500;}
+.ruta-sub{font-size:10px;opacity:0.8;}
+.ruta-body{padding:10px 12px;background:var(--color-background-primary);}
+.ruta-step{display:flex;gap:8px;margin-bottom:7px;align-items:flex-start;}
+.ruta-step-icon{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+.ruta-step-icon svg{width:10px;height:10px;}
+.ruta-step-content{}
+.ruta-step-title{font-size:11px;font-weight:500;color:var(--color-text-primary);}
+.ruta-step-desc{font-size:10px;color:var(--color-text-secondary);line-height:1.4;margin-top:1px;}
+.var-chips{display:flex;flex-wrap:wrap;gap:3px;margin-top:5px;}
+.var-chip{font-size:9px;padding:2px 6px;border-radius:8px;}
+.priority-vars{margin-top:8px;padding:8px 10px;border-radius:var(--border-radius-md);}
+.priority-title{font-size:10px;font-weight:500;margin-bottom:5px;}
+.priority-list{display:flex;flex-direction:column;gap:3px;}
+.priority-row{display:flex;align-items:center;gap:6px;}
+.priority-name{font-size:10px;color:var(--color-text-secondary);flex:1;}
+.priority-val{font-size:10px;font-weight:500;}
+.pdi-70-20-10{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px;}
+.pdi-block{border-radius:var(--border-radius-md);padding:8px;border:0.5px solid var(--color-border-tertiary);}
+.pdi-pct{font-size:16px;font-weight:500;color:var(--color-text-primary);}
+.pdi-type{font-size:10px;font-weight:500;color:var(--color-text-secondary);margin-bottom:4px;}
+.pdi-items{font-size:10px;color:var(--color-text-secondary);line-height:1.5;}
+</style>
+
+<div class="db">
+<div class="db-header">
+  <div>
+    <div class="db-title">Dashboard de Talento — Nine Box WPI + Modelo de Desarrollo</div>
+    <div class="db-sub">Evaluación de desempeño vs. potencial | 24 líderes | Modelo Corporativo Italcol</div>
+  </div>
+  <div style="display:flex;align-items:center;gap:8px;">
+    <div style="display:flex;background:rgba(255,255,255,0.1);border-radius:20px;padding:2px;gap:2px;">
+      <button class="company-btn active" data-company="italcol" onclick="switchCompany('italcol')"
+        style="font-size:11px;font-weight:600;padding:4px 10px;border-radius:18px;border:none;cursor:pointer;background:#fff;color:#1B2A6B;transition:all 0.2s;">
+        Italcol
+      </button>
+      <button class="company-btn" data-company="italfoods" onclick="switchCompany('italfoods')"
+        style="font-size:11px;font-weight:600;padding:4px 10px;border-radius:18px;border:none;cursor:pointer;background:transparent;color:rgba(255,255,255,0.7);transition:all 0.2s;">
+        Italfoods
+      </button>
+      <button class="company-btn" data-company="regional" onclick="switchCompany('regional')"
+        style="font-size:11px;font-weight:600;padding:4px 10px;border-radius:18px;border:none;cursor:pointer;background:transparent;color:rgba(255,255,255,0.7);transition:all 0.2s;">
+        Regional Centro
+      </button>
+    </div>
+    <label style="font-size:10px;padding:4px 10px;border-radius:20px;background:rgba(255,255,255,0.15);color:#fff;cursor:pointer;border:0.5px solid rgba(255,255,255,0.3);" title="Cargar nuevo Excel WPI">
+      📂 Datos
+      <input type="file" accept=".xlsx,.xls" style="display:none;" onchange="importXLSX(event)">
+    </label>
+    <a href="italcol_desempeno.html" style="font-size:10px;padding:4px 11px;border-radius:20px;background:rgba(232,99,26,0.25);color:#E8631A;border:0.5px solid rgba(232,99,26,0.5);text-decoration:none;white-space:nowrap;">📋 Evaluar desempeño</a>
+    <div class="db-logo" id="company-logo">ITALCOL</div>
+  </div>
+</div>
+
+<div class="kpi-row" id="kpi-row"></div>
+
+<div class="nav-tabs">
+  <button class="nav-tab active" onclick="setView('ninebox',this)">Nine Box</button>
+  <button class="nav-tab" onclick="setView('wpi',this)">Perfil WPI Completo</button>
+  <button class="nav-tab" onclick="setView('pdi',this)">Plan de Desarrollo Individual</button>
+  <button class="nav-tab" onclick="setView('comparar',this)">⇄ Comparar perfiles</button>
+  <button class="nav-tab" onclick="setView('segundos',this)">👥 Segundos y sucesores</button>
+</div>
+
+<div class="main-row">
+  <div class="chart-card" id="chart-area">
+    <div class="chart-top">
+      <span class="section-label" id="chart-title">Nine Box</span>
+      <div class="mode-toggle">
+        <button class="mode-btn active" onclick="setMode('simple',this)">Pot. WPI</button>
+        <button class="mode-btn" onclick="setMode('comp',this)">Índice comp.</button>
+      </div>
+    </div>
+    <div class="chart-top" style="margin-top:0;margin-bottom:10px;" id="filter-pills">
+      <span class="pill active" onclick="setFilter('todos',this)">Todos</span>
+      <span class="pill" onclick="setFilter('Talento Alto Potencial',this)">Talento</span>
+      <span class="pill" onclick="setFilter('Colaborador Clave',this)">Clave</span>
+      <span class="pill" onclick="setFilter('Destacado',this)">Destacado</span>
+      <span class="pill" onclick="setFilter('En Riesgo',this)">En Riesgo</span>
+      <span class="pill" onclick="setFilter('Plan de Acción',this)">Plan Acción</span>
+      <span class="pill" onclick="setFilter('Evaluar Rol',this)">Evaluar Rol</span>
+    </div>
+    <div id="chart-content">
+      <div class="scatter-wrap">
+        <canvas id="nb"></canvas>
+        <div class="nb-tooltip" id="tip"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="right-col">
+    <div class="panel">
+      <div class="panel-title">Líderes — selecciona para ver perfil</div>
+      <div id="people-list"></div>
+    </div>
+    <!-- PANEL PENDIENTES REDISEÑADO -->
+    <div class="panel" id="pending-panel" style="display:none;
+      background:var(--pending-bg);
+      border:0.5px solid var(--pending-border);
+      border-radius:var(--border-radius-lg);
+      padding:12px;">
+    </div>
+    <div class="panel" id="profile-card">
+      <div class="profile-empty">Selecciona un líder para ver su perfil completo, WPI y plan de desarrollo.</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+const RAW_ITALCOL=[
+  {n:"Balaguera Guiza Hugo Armando",       amb:7,ene:5,ini:7,lid:9,pot:9,per:10,con:8,fle:9,mul:8,ana:8,inn:8,det:7,cum:7,pla:10,reg:8,per2:10,pre:8,dem:10,ext:5,equ:8,aut:5,tol:10},
+  {n:"Juan Carlos Fernández",              amb:10,ene:4,ini:5,lid:4,pot:3,per:7,con:9,fle:8,mul:9,ana:8,inn:8,det:10,cum:8,pla:7,reg:9,per2:10,pre:6,dem:4,ext:4,equ:7,aut:8,tol:7},
+  {n:"Gómez Rueda Carlos Eduardo",         amb:6,ene:5,ini:7,lid:6,pot:4,per:7,con:7,fle:5,mul:7,ana:4,inn:8,det:7,cum:4,pla:5,reg:9,per2:10,pre:9,dem:10,ext:7,equ:7,aut:7,tol:7},
+  {n:"Juan David Moncada",                 amb:8,ene:6,ini:6,lid:7,pot:7,per:8,con:8,fle:6,mul:8,ana:8,inn:9,det:8,cum:8,pla:8,reg:8,per2:10,pre:8,dem:9,ext:8,equ:9,aut:9,tol:9},
+  {n:"Rojas Pinilla Alejandro",            amb:7,ene:5,ini:5,lid:3,pot:5,per:6,con:6,fle:5,mul:5,ana:3,inn:6,det:6,cum:4,pla:7,reg:7,per2:8,pre:6,dem:7,ext:3,equ:5,aut:5,tol:6},
+  {n:"Alejandra Mojica",                   amb:7,ene:6,ini:8,lid:6,pot:6,per:7,con:6,fle:5,mul:6,ana:4,inn:7,det:6,cum:5,pla:7,reg:9,per2:8,pre:8,dem:8,ext:8,equ:8,aut:8,tol:9},
+  {n:"Carlos Mauricio Castro",             amb:9,ene:6,ini:6,lid:7,pot:6,per:9,con:8,fle:5,mul:6,ana:9,inn:8,det:8,cum:7,pla:8,reg:7,per2:10,pre:8,dem:7,ext:5,equ:7,aut:7,tol:8},
+  {n:"Pizarro Toro Gustavo Eliecer",       amb:6,ene:3,ini:5,lid:7,pot:6,per:9,con:7,fle:4,mul:6,ana:6,inn:7,det:6,cum:7,pla:6,reg:9,per2:8,pre:7,dem:7,ext:5,equ:6,aut:7,tol:10},
+  {n:"Cadavid Hernández Juan Felipe",      amb:5,ene:5,ini:8,lid:7,pot:6,per:9,con:7,fle:5,mul:7,ana:5,inn:6,det:6,cum:7,pla:8,reg:8,per2:10,pre:9,dem:10,ext:9,equ:8,aut:10,tol:8},
+  {n:"Ramírez Sierra Héctor Alejandro",    amb:6,ene:3,ini:6,lid:6,pot:2,per:5,con:6,fle:6,mul:5,ana:4,inn:8,det:6,cum:3,pla:6,reg:7,per2:9,pre:7,dem:9,ext:5,equ:7,aut:7,tol:5},
+  {n:"Nelson Álvarez",                     amb:7,ene:6,ini:8,lid:7,pot:7,per:8,con:6,fle:2,mul:6,ana:5,inn:9,det:5,cum:4,pla:5,reg:8,per2:8,pre:9,dem:10,ext:5,equ:6,aut:6,tol:9},
+  {n:"Andrés Felipe Zapata",               amb:7,ene:5,ini:8,lid:5,pot:5,per:8,con:7,fle:5,mul:7,ana:6,inn:7,det:5,cum:4,pla:6,reg:7,per2:9,pre:8,dem:9,ext:7,equ:6,aut:8,tol:8},
+  {n:"Castro Quintero Carlos Mauricio",    amb:9,ene:6,ini:6,lid:7,pot:6,per:9,con:8,fle:5,mul:6,ana:9,inn:8,det:8,cum:7,pla:8,reg:7,per2:10,pre:8,dem:7,ext:5,equ:7,aut:7,tol:8},
+  {n:"Ríos Gómez Cristian Mauricio",       amb:9,ene:6,ini:7,lid:6,pot:6,per:6,con:7,fle:4,mul:6,ana:6,inn:8,det:6,cum:5,pla:7,reg:6,per2:9,pre:6,dem:7,ext:3,equ:7,aut:5,tol:8},
+  {n:"Higuita Uribe Julio César",          amb:6,ene:6,ini:6,lid:6,pot:5,per:7,con:8,fle:6,mul:6,ana:8,inn:7,det:7,cum:6,pla:9,reg:6,per2:10,pre:8,dem:8,ext:5,equ:6,aut:6,tol:10},
+  {n:"Flórez Schneider Martín Augusto",    amb:8,ene:6,ini:9,lid:8,pot:4,per:10,con:10,fle:7,mul:9,ana:7,inn:9,det:7,cum:8,pla:8,reg:8,per2:10,pre:8,dem:5,ext:3,equ:7,aut:7,tol:10},
+  {n:"Aristizábal Franco Manuel D.",       amb:6,ene:3,ini:5,lid:7,pot:10,per:7,con:6,fle:5,mul:6,ana:5,inn:5,det:6,cum:4,pla:6,reg:6,per2:9,pre:7,dem:8,ext:8,equ:7,aut:6,tol:8},
+  {n:"Guarín Camacho Jorge Eduardo",       amb:4,ene:8,ini:6,lid:6,pot:6,per:6,con:6,fle:7,mul:7,ana:6,inn:8,det:6,cum:5,pla:5,reg:8,per2:9,pre:8,dem:10,ext:8,equ:6,aut:7,tol:8},
+  {n:"González Córdoba Santiago",          amb:6,ene:4,ini:6,lid:7,pot:6,per:7,con:7,fle:7,mul:6,ana:6,inn:8,det:7,cum:6,pla:7,reg:6,per2:7,pre:6,dem:9,ext:7,equ:8,aut:7,tol:9},
+  {n:"Pardo Miller Felipe",                amb:7,ene:6,ini:7,lid:6,pot:1,per:7,con:8,fle:6,mul:6,ana:7,inn:9,det:7,cum:5,pla:6,reg:8,per2:7,pre:9,dem:10,ext:7,equ:7,aut:7,tol:6},
+  {n:"Pombo Holguín Juan Guillermo",       amb:6,ene:4,ini:4,lid:9,pot:4,per:6,con:9,fle:6,mul:9,ana:9,inn:9,det:9,cum:7,pla:8,reg:7,per2:9,pre:9,dem:7,ext:4,equ:7,aut:7,tol:10},
+  {n:"Restrepo Lozano Juan Rafael",        amb:8,ene:7,ini:7,lid:8,pot:8,per:8,con:8,fle:5,mul:5,ana:8,inn:7,det:7,cum:8,pla:9,reg:8,per2:9,pre:7,dem:10,ext:5,equ:6,aut:6,tol:8},
+  {n:"Javier Pérez",                       amb:4,ene:5,ini:7,lid:6,pot:5,per:6,con:5,fle:4,mul:5,ana:6,inn:7,det:5,cum:5,pla:6,reg:6,per2:7,pre:7,dem:8,ext:7,equ:6,aut:6,tol:7},
+  {n:"Jossi Esteban Arguelles",            amb:9,ene:7,ini:7,lid:5,pot:3,per:7,con:8,fle:6,mul:8,ana:7,inn:8,det:8,cum:6,pla:5,reg:9,per2:8,pre:7,dem:5,ext:5,equ:7,aut:8,tol:7},
+]
+
+const PENDING_ITALCOL=["Luis Felipe Saavedra","Andrés Gómez","Claudia","Edward","Eliana","Campos Peña Oscar Mauricio","Nataly Castillo","Juan Diego Ramírez"];
+
+const RAW_ITALFOODS=[
+  {n:"Claudia Meléndez",      cargo:"Directora Administrativa Cluster Italfoods",   amb:6,ene:4,ini:5,lid:7,pot:5,per:7,con:6,fle:5,mul:4,ana:8,inn:7,det:6,cum:5,pla:7,reg:7,per2:7,pre:8,dem:6,ext:6,equ:6,aut:7,tol:7},
+  {n:"Daniel Grillo",          cargo:"Gerente Nacional De Huevos",                  amb:7,ene:5,ini:7,lid:4,pot:9,per:7,con:7,fle:8,mul:6,ana:7,inn:8,det:8,cum:6,pla:7,reg:7,per2:8,pre:7,dem:5,ext:4,equ:7,aut:6,tol:10},
+  {n:"Luz Adriana Luna",       cargo:"Directora De Desarrollo Cluster",             amb:4,ene:5,ini:6,lid:6,pot:8,per:7,con:6,fle:5,mul:6,ana:5,inn:6,det:6,cum:5,pla:6,reg:7,per2:8,pre:8,dem:8,ext:4,equ:7,aut:7,tol:7},
+  {n:"Heidy Díaz Castro",      cargo:"Directora Inteligencia De Información",       amb:6,ene:6,ini:5,lid:7,pot:8,per:9,con:8,fle:7,mul:6,ana:6,inn:7,det:8,cum:7,pla:7,reg:8,per2:9,pre:6,dem:7,ext:6,equ:7,aut:7,tol:10},
+  {n:"Claudia Ruiz",           cargo:"Directora Consumo Masivo",                    amb:6,ene:7,ini:8,lid:10,pot:6,per:8,con:8,fle:5,mul:7,ana:8,inn:6,det:6,cum:5,pla:10,reg:7,per2:10,pre:10,dem:10,ext:8,equ:9,aut:9,tol:10},
+  {n:"Felipe Castaño",         cargo:"Director Consumo Masivo",                     amb:7,ene:4,ini:7,lid:7,pot:4,per:9,con:9,fle:7,mul:6,ana:8,inn:7,det:8,cum:8,pla:7,reg:8,per2:10,pre:7,dem:9,ext:9,equ:9,aut:10,tol:9},
+  {n:"Darío García",           cargo:"Gerente General Bellini",                     amb:6,ene:4,ini:7,lid:7,pot:5,per:7,con:7,fle:7,mul:7,ana:7,inn:8,det:7,cum:6,pla:7,reg:7,per2:8,pre:7,dem:9,ext:5,equ:8,aut:6,tol:6},
+  {n:"Luz Karime Galvis",      cargo:"Gerente Corporativa de GH",                   amb:6,ene:6,ini:6,lid:8,pot:8,per:6,con:7,fle:6,mul:6,ana:7,inn:7,det:6,cum:7,pla:6,reg:9,per2:9,pre:9,dem:6,ext:6,equ:9,aut:8,tol:7},
+  {n:"Diego Osorio Vargas",    cargo:"Gerente Comercial",                           amb:6,ene:5,ini:7,lid:5,pot:6,per:7,con:5,fle:7,mul:6,ana:5,inn:7,det:5,cum:5,pla:7,reg:7,per2:8,pre:7,dem:8,ext:6,equ:6,aut:6,tol:7},
+  {n:"Nelson Duarte Murcia",   cargo:"Gerente Regional Oriente",                    amb:7,ene:6,ini:7,lid:6,pot:6,per:6,con:6,fle:5,mul:5,ana:6,inn:7,det:6,cum:4,pla:5,reg:6,per2:8,pre:8,dem:7,ext:4,equ:7,aut:7,tol:8},
+  {n:"Luis Castiblanco",       cargo:"Gerente Regional",                            amb:4,ene:5,ini:7,lid:5,pot:8,per:7,con:6,fle:7,mul:6,ana:5,inn:7,det:7,cum:7,pla:7,reg:7,per2:9,pre:8,dem:7,ext:6,equ:8,aut:7,tol:8},
+  {n:"Oscar Roa Plazas",       cargo:"Director Food Service",                       amb:9,ene:7,ini:7,lid:7,pot:3,per:8,con:8,fle:7,mul:9,ana:9,inn:10,det:8,cum:7,pla:8,reg:7,per2:10,pre:7,dem:7,ext:5,equ:8,aut:8,tol:10},
+  {n:"Olga Corredor",          cargo:"Gerente Procesos De Apoyo",                   amb:7,ene:6,ini:7,lid:6,pot:3,per:6,con:5,fle:6,mul:6,ana:6,inn:6,det:6,cum:6,pla:5,reg:7,per2:7,pre:7,dem:7,ext:3,equ:4,aut:6,tol:5},
+]
+
+const PENDING_ITALFOODS=["Luis Felipe Ossa","Javiv Barjun","Jaime Fontalvo","Juan Camilo Trujillo","Edgar Giovanni Rivera","Tatiana Lozano","Nury Parrado"];
+
+const RAW_REGIONAL=[
+  {n:"Carlos Mauricio Castro Quintero",cargo:"Gerente Comercial",clave:true,critico:true,d_pct:94,
+   amb:9,ene:8,ini:9,lid:8,pot:8,per:7,con:7,fle:5,mul:7,ana:6,inn:6,det:6,cum:9,pla:10,reg:8,per2:7,pre:7,dem:6,ext:7,equ:8,aut:5,tol:7,
+   resultado:"Talento",dev_tecnico:"En agenda sucesor Gerencia Regional: Comercio exterior, Logística y abastecimiento",
+   tiene_segundo:true,
+   segundo:{n:"Camilo Cadavid",cargo:"Gerente de venta Quality",email:"camilocadavid@italcol.com",tel:"317 2339608",ced:"1030558019",
+     amb:5,ene:7,ini:5,lid:6,pot:6,per:10,con:8,fle:5,mul:8,ana:5,inn:7,det:8,cum:9,pla:9,reg:10,per2:8,pre:7,dem:6,ext:6,equ:8,aut:9,tol:8,
+     d_pct:95,wpi_completo:true,zona:"Destacado",es_sucesor:true,d_final:8.88}},
+  {n:"Diana Carolina Matulevich",cargo:"Gerente Administrativa",clave:true,critico:true,d_pct:94,
+   amb:2,ene:8,ini:7,lid:7,pot:6,per:5,con:10,fle:9,mul:6,ana:3,inn:4,det:7,cum:6,pla:5,reg:8,per2:8,pre:9,dem:10,ext:6,equ:10,aut:5,tol:7,
+   resultado:"",dev_tecnico:"Capacitación en las áreas a cargo y las áreas afines para toma de decisiones",
+   tiene_segundo:true,
+   segundo:{n:"Ronal Villalobos",cargo:"Gerente Administrativo Tolima Grande",email:"ronalvillalobos@italcol.com",tel:"3153398591",ced:"79215605",
+     amb:4,ene:5,ini:4,lid:6,pot:5,per:5,con:5,fle:6,mul:4,ana:4,inn:5,det:6,cum:4,pla:7,reg:8,per2:5,pre:6,dem:7,ext:4,equ:6,aut:9,tol:5,
+     d_pct:92,wpi_completo:true,zona:"Especialista",es_sucesor:false,d_final:7.22}},
+  {n:"Hakin Rodriguez Vargas",cargo:"Jefe Logística",clave:true,critico:true,d_pct:89,
+   amb:5,ene:6,ini:5,lid:6,pot:6,per:6,con:5,fle:6,mul:6,ana:4,inn:6,det:6,cum:6,pla:6,reg:8,per2:6,pre:5,dem:5,ext:7,equ:6,aut:7,tol:8,
+   resultado:"Destacado",dev_tecnico:"Liderazgo / Comunicación asertiva",
+   tiene_segundo:true,
+   segundo:{n:"Brayan Acosta",cargo:"Coordinador de Logística",email:"brayanacosta@italcol.com",tel:"3125433963",ced:"1007509940",
+     amb:7,ene:5,ini:6,lid:7,pot:6,per:7,con:5,fle:5,mul:5,ana:7,inn:6,det:6,cum:8,pla:8,reg:8,per2:8,pre:5,dem:6,ext:5,equ:6,aut:8,tol:6,
+     d_pct:87,wpi_completo:true,zona:"Destacado",es_sucesor:true,d_final:8.22}},
+  {n:"Jossie Esteban Arguelles",cargo:"Gerente de Producción",clave:true,critico:true,d_pct:92,
+   amb:9,ene:8,ini:9,lid:8,pot:8,per:8,con:7,fle:6,mul:6,ana:7,inn:8,det:7,cum:7,pla:7,reg:5,per2:9,pre:5,dem:3,ext:5,equ:7,aut:5,tol:8,
+   resultado:"Talento",dev_tecnico:"Automatización de procesos productivos",
+   tiene_segundo:true,
+   segundo:{n:"Jhoser Cervantes",cargo:"Gerente Junior",email:"jhosercervantes@italcol.com",tel:"3183875899",ced:"1140858005",
+     amb:7,ene:8,ini:7,lid:8,pot:7,per:9,con:7,fle:6,mul:8,ana:7,inn:6,det:6,cum:8,pla:8,reg:8,per2:9,pre:6,dem:9,ext:9,equ:7,aut:8,tol:9,
+     d_pct:91,wpi_completo:true,zona:"Destacado",es_sucesor:true,d_final:8.8}},
+  {n:"Alejandro Rojas Pinilla",cargo:"Gerente Regional",clave:true,critico:true,d_pct:0,
+   amb:7,ene:6,ini:5,lid:6,pot:6,per:7,con:3,fle:5,mul:6,ana:5,inn:5,det:5,cum:6,pla:8,reg:6,per2:7,pre:3,dem:5,ext:4,equ:5,aut:7,tol:5,
+   resultado:"",dev_tecnico:"Formación de segundo, metodología de formador de formadores y mentoría",
+   tiene_segundo:true,
+   segundo:{n:"Carlos Mauricio Castro",cargo:"Sub Gerente Planta Funza / Gerente Planta Cota",email:"CarlosCastro@italcol.com",tel:"3133936160",ced:"79784068",
+     amb:9,ene:8,ini:9,lid:8,pot:8,per:7,con:7,fle:5,mul:7,ana:6,inn:6,det:6,cum:9,pla:10,reg:8,per2:7,pre:7,dem:6,ext:7,equ:8,aut:5,tol:7,
+     d_pct:94,wpi_completo:true,zona:"Talento Alto Potencial",es_sucesor:true,d_final:8.57}},
+  {n:"Yasmine García Torralba",cargo:"Jefe de Calidad",clave:true,critico:true,d_pct:94,
+   amb:5,ene:6,ini:5,lid:5,pot:4,per:5,con:5,fle:6,mul:5,ana:4,inn:5,det:7,cum:6,pla:5,reg:7,per2:5,pre:3,dem:3,ext:7,equ:5,aut:8,tol:4,
+   resultado:"Especialista",dev_tecnico:"Formación de segundo, metodología de formador de formadores y mentoría",
+   tiene_segundo:false,segundo:null},
+  {n:"Vanessa Leguizamón",cargo:"Jefe de SST",clave:true,critico:false,d_pct:82,sin_wpi:true,
+   amb:5,ene:5,ini:5,lid:5,pot:5,per:5,con:5,fle:5,mul:5,ana:5,inn:5,det:5,cum:5,pla:5,reg:5,per2:5,pre:5,dem:5,ext:5,equ:5,aut:5,tol:5,
+   resultado:"",dev_tecnico:"Formación de segundo, metodología de formador de formadores y mentoría",
+   tiene_segundo:true,
+   segundo:{n:"Melisa Serrato",cargo:"Analista de SST",email:"angieserrato@italcol.com",tel:"3123024435",ced:"1072751889",
+     amb:3,ene:6,ini:4,lid:6,pot:4,per:5,con:6,fle:6,mul:4,ana:5,inn:5,det:5,cum:6,pla:6,reg:4,per2:6,pre:6,dem:8,ext:4,equ:6,aut:9,tol:5,
+     d_pct:94,wpi_completo:true,zona:"Especialista",es_sucesor:false,d_final:7.58}},
+  {n:"Yaqueline Tovar Quintero",cargo:"Jefe de GH",clave:true,critico:false,d_pct:91,
+   amb:7,ene:8,ini:5,lid:8,pot:6,per:6,con:4,fle:8,mul:7,ana:7,inn:8,det:7,cum:6,pla:9,reg:8,per2:6,pre:7,dem:8,ext:5,equ:6,aut:9,tol:6,
+   resultado:"Destacado",dev_tecnico:"Formación de segundo, metodología de formador de formadores y mentoría",
+   tiene_segundo:true,
+   segundo:{n:"Carolina Martínez",cargo:"Coordinadora de GH",email:"lindamartinez@italcol.com",tel:"3103085862",ced:"1098584118",
+     amb:7,ene:6,ini:7,lid:8,pot:7,per:10,con:8,fle:7,mul:7,ana:7,inn:7,det:8,cum:9,pla:9,reg:8,per2:9,pre:8,dem:4,ext:5,equ:7,aut:8,tol:9,
+     d_pct:94,wpi_completo:true,zona:"Destacado",es_sucesor:true,d_final:9.07}},
+  {n:"Lady Julieth Prada",cargo:"Líder de Certificación",clave:true,critico:false,d_pct:90,
+   amb:4,ene:6,ini:4,lid:7,pot:6,per:6,con:7,fle:8,mul:4,ana:4,inn:4,det:5,cum:7,pla:8,reg:8,per2:6,pre:6,dem:6,ext:7,equ:6,aut:7,tol:6,
+   resultado:"Destacado",dev_tecnico:"Formación de segundo, metodología de formador de formadores y mentoría",
+   tiene_segundo:false,segundo:null},
+  {n:"Luis Eduardo Gutiérrez",cargo:"Jefe de SIG",clave:true,critico:false,d_pct:94,
+   amb:6,ene:6,ini:4,lid:5,pot:4,per:8,con:8,fle:6,mul:4,ana:6,inn:6,det:7,cum:7,pla:7,reg:9,per2:8,pre:6,dem:7,ext:7,equ:8,aut:7,tol:6,
+   resultado:"Especialista",dev_tecnico:"Derecho ambiental y sostenibilidad, maestría en curso",
+   tiene_segundo:true,
+   segundo:{n:"Nataly Hernández",cargo:"Coordinadora Ambiental Planta Funza",email:"Natalyhernandez@italcol.com",tel:"3112123471",ced:"1022422791",
+     amb:6,ene:5,ini:4,lid:6,pot:3,per:5,con:5,fle:6,mul:5,ana:7,inn:6,det:6,cum:4,pla:7,reg:7,per2:5,pre:5,dem:8,ext:3,equ:5,aut:7,tol:5,
+     d_pct:90,wpi_completo:true,zona:"Especialista",es_sucesor:false,d_final:7.0}},
+  {n:"Angie Carolina Martínez",cargo:"Jefe de Compras",clave:true,critico:false,d_pct:93,
+   amb:6,ene:4,ini:7,lid:7,pot:8,per:8,con:5,fle:6,mul:7,ana:4,inn:7,det:7,cum:4,pla:9,reg:9,per2:5,pre:7,dem:5,ext:5,equ:7,aut:6,tol:8,
+   resultado:"Talento",dev_tecnico:"Formación de segundo, metodología de formador de formadores y mentoría",
+   tiene_segundo:true,
+   segundo:{n:"Jhon Fredy Donato",cargo:"Coordinador de Compras",email:"jhondonato@italcol.com",tel:"3102101359",ced:"1010193852",
+     amb:6,ene:8,ini:8,lid:7,pot:6,per:10,con:8,fle:1,mul:7,ana:8,inn:8,det:7,cum:8,pla:6,reg:10,per2:6,pre:3,dem:8,ext:5,equ:9,aut:10,tol:6,
+     d_pct:90,wpi_completo:true,zona:"Destacado",es_sucesor:true,d_final:8.38}},
+  {n:"Maria Carolina Chala",cargo:"Gerente Ventas Materia Prima",clave:true,critico:true,d_pct:90,
+   amb:5,ene:5,ini:3,lid:7,pot:6,per:7,con:6,fle:5,mul:4,ana:6,inn:6,det:6,cum:6,pla:7,reg:7,per2:7,pre:6,dem:5,ext:6,equ:4,aut:7,tol:4,
+   resultado:"Destacado",dev_tecnico:"Liderazgo",
+   tiene_segundo:true,
+   segundo:{n:"Zaidy Yurany Alfonso",cargo:"Asistente de Ventas Materia Prima",email:"zaidyalfonso@italcol.com",tel:"3212325704",ced:"35377106",
+     amb:5,ene:5,ini:3,lid:7,pot:6,per:7,con:6,fle:5,mul:4,ana:6,inn:6,det:6,cum:6,pla:7,reg:9,per2:7,pre:6,dem:5,ext:6,equ:4,aut:7,tol:6,
+     d_pct:96,wpi_completo:true,zona:"Destacado",es_sucesor:true,d_final:7.8}},
+]
+
+const PENDING_REGIONAL=[];
+
+let RAW=RAW_ITALCOL.slice();
+let PENDING=PENDING_ITALCOL.slice();
+
+const WPI_DIMS=[
+  {name:"Energía e Impulso",color:"#E8631A",bg:"#FEF0E8",vars:[
+    {k:"amb",l:"Ambición"},{k:"ene",l:"Energía"},{k:"ini",l:"Iniciativa"},
+    {k:"lid",l:"Liderazgo"},{k:"pot",l:"Pot. Liderazgo"},{k:"per",l:"Persuasión"},
+    {k:"con",l:"Conf. Social"},{k:"fle",l:"Flexibilidad"},{k:"mul",l:"Multi-Tarea"},
+  ]},
+  {name:"Resolución de Problemas",color:"#534AB7",bg:"#EEEDFE",vars:[
+    {k:"ana",l:"Pens. Analítico"},{k:"inn",l:"Innovación"},
+  ]},
+  {name:"Ejecución",color:"#3B6D11",bg:"#EAF3DE",vars:[
+    {k:"det",l:"Atenc. Detalle"},{k:"cum",l:"Cumpl. Compromisos"},
+    {k:"pla",l:"Planificación"},{k:"reg",l:"Seg. Reglas"},{k:"per2",l:"Persistencia"},
+  ]},
+  {name:"Relacional",color:"#185FA5",bg:"#E6F1FB",vars:[
+    {k:"pre",l:"Preoc. Demás"},{k:"dem",l:"Democrático"},
+    {k:"ext",l:"Extrovertido"},{k:"equ",l:"Trabajo Equipo"},
+  ]},
+  {name:"Presión y Estrés",color:"#993556",bg:"#FBEAF0",vars:[
+    {k:"aut",l:"Autocontrol"},{k:"tol",l:"Tol. Estrés"},
+  ]},
+];
+
+const T1=10/3,T2=20/3;
+const ZONES={
+  "00":{l:"En Riesgo",bg:"#F5C6CB",st:"#C0392B",tc:"#7B1C1C"},
+  "10":{l:"Colaborador Efectivo",bg:"#FAE5C8",st:"#D9823A",tc:"#7B3A0A"},
+  "20":{l:"Especialista",bg:"#D6EAC8",st:"#5A9E3A",tc:"#1E4D0F"},
+  "01":{l:"Plan de Acción",bg:"#FAE5C8",st:"#D9923A",tc:"#7B3A0A"},
+  "11":{l:"En Desarrollo",bg:"#FDF3D0",st:"#C8A800",tc:"#5C4A00"},
+  "21":{l:"Destacado",bg:"#D6EAC8",st:"#5A9E3A",tc:"#1E4D0F"},
+  "02":{l:"Evaluar Rol",bg:"#FDF3D0",st:"#C8A800",tc:"#5C4A00"},
+  "12":{l:"Colaborador Clave",bg:"#D6EAC8",st:"#5A9E3A",tc:"#1E4D0F"},
+  "22":{l:"Talento Alto Potencial",bg:"#B7DDA8",st:"#3A7D1E",tc:"#1A4A0A"},
+};
+
+const RUTAS={
+  "Talento Alto Potencial":{ruta:"Ruta 4",name:"Talento Consolidado",color:"#534AB7",bg:"#EEEDFE",tc:"#3C3489",
+    desc:"Proyectar y Consolidar — Sucesión lista",quarter:"Q1",
+    steps:[
+      {icon:"★",title:"Confirmación como sucesor",desc:"Inscribir en banco de talento como sucesor confirmado para cargo clave o crítico."},
+      {icon:"→",title:"Movilidad estratégica",desc:"Asignación a proyectos de alta visibilidad o rotación interfuncional en áreas estratégicas."},
+      {icon:"◎",title:"Programa de liderazgo ejecutivo",desc:"Participación en programa de liderazgo corporativo Italcol y exposición a comité directivo."},
+      {icon:"▲",title:"Plan de sucesión Ready Now",desc:"Preparación activa para asumir posición de mayor responsabilidad en 0–12 meses."},
+    ]},
+  "Colaborador Clave":{ruta:"Ruta 3",name:"Talento Destacado",color:"#1B6BB5",bg:"#E6F1FB",tc:"#0C447C",
+    desc:"Desarrollar y Potenciar — Plan 70-20-10",quarter:"Q1-Q2",
+    steps:[
+      {icon:"◉",title:"Plan 70-20-10 personalizado",desc:"70% aprender haciendo (proyectos retadores), 20% relaciones (mentoring/coaching), 10% formación formal."},
+      {icon:"◈",title:"Mentoring con líder senior",desc:"Asignación de mentor interno de nivel superior para acompañamiento trimestral de carrera."},
+      {icon:"⊕",title:"Proyectos cross-funcionales",desc:"Participación activa en proyectos estratégicos fuera de su área de confort funcional."},
+      {icon:"↑",title:"PDI focalizado en brechas",desc:"Plan de Desarrollo Individual con foco en variables WPI con puntaje inferior a 6."},
+    ]},
+  "Destacado":{ruta:"Ruta 3",name:"Talento Destacado",color:"#1B6BB5",bg:"#E6F1FB",tc:"#0C447C",
+    desc:"Desarrollar y Potenciar — Especialización",quarter:"Q1-Q2",
+    steps:[
+      {icon:"◎",title:"Liderazgo técnico o funcional",desc:"Desarrollo como referente técnico en su área; rol de facilitador o instructor interno."},
+      {icon:"◉",title:"Mentoring a otros",desc:"Convertirse en mentor de colaboradores en desarrollo, potenciando su propio liderazgo."},
+      {icon:"⊕",title:"Certificaciones técnicas",desc:"Financiamiento de certificaciones en área de expertise que fortalezcan su perfil especialista."},
+      {icon:"↑",title:"PDI en habilidades relacionales",desc:"Fortalecer competencias interpersonales y de influencia para ampliar su rango de liderazgo."},
+    ]},
+  "Especialista":{ruta:"Ruta 3",name:"Talento Destacado",color:"#1B6BB5",bg:"#E6F1FB",tc:"#0C447C",
+    desc:"Desarrollar y Potenciar — Expertise",quarter:"Q2",
+    steps:[
+      {icon:"★",title:"Reconocimiento como referente",desc:"Visibilizar su expertise en foros internos, comunidades de práctica y capacitaciones."},
+      {icon:"◎",title:"Transferencia de conocimiento",desc:"Diseño de programas de formación basados en su conocimiento técnico especializado."},
+      {icon:"◉",title:"Retención estratégica",desc:"Plan de retención personalizado: beneficios, proyectos retadores y reconocimiento formal."},
+      {icon:"↑",title:"Ampliar habilidades de liderazgo",desc:"Fortalecer variables de liderazgo e influencia para considerar un rol de gestión en el futuro."},
+    ]},
+  "Evaluar Rol":{ruta:"Ruta 2",name:"Talento en Fortalecimiento",color:"#E8631A",bg:"#FEF0E8",tc:"#7B3A0A",
+    desc:"Evaluar y Diagnosticar — Reubicación",quarter:"Q3",
+    steps:[
+      {icon:"◉",title:"Diagnóstico de desalineación",desc:"Entrevista de potencial y revisión del perfil WPI para identificar causas del bajo desempeño."},
+      {icon:"◈",title:"Evaluación del rol actual",desc:"Análisis de fit entre el perfil del cargo y las fortalezas reales del colaborador."},
+      {icon:"→",title:"Reubicación estratégica",desc:"Si hay alto potencial confirmado, explorar reubicación en un rol mejor alineado antes de 60 días."},
+      {icon:"↑",title:"Coaching de transición",desc:"Coaching focalizado para acompañar el proceso de cambio y activar el potencial identificado."},
+    ]},
+  "En Desarrollo":{ruta:"Ruta 2",name:"Talento en Fortalecimiento",color:"#E8631A",bg:"#FEF0E8",tc:"#7B3A0A",
+    desc:"Evaluar y Diagnosticar — Acompañamiento",quarter:"Q3",
+    steps:[
+      {icon:"◈",title:"Metas de desempeño claras",desc:"Definición de objetivos trimestrales específicos y medibles acordados con el líder directo."},
+      {icon:"◉",title:"Mentoring activo",desc:"Asignación de mentor funcional para acompañamiento quincenal enfocado en brechas de ejecución."},
+      {icon:"⊕",title:"Entrenamiento on the job",desc:"Formación técnica intensiva mediante tareas y proyectos de complejidad creciente."},
+      {icon:"↑",title:"Revisión trimestral de avance",desc:"Revisión formal cada 3 meses para evaluar progreso y ajustar el plan de desarrollo."},
+    ]},
+  "Plan de Acción":{ruta:"Ruta 2",name:"Talento en Fortalecimiento",color:"#E8631A",bg:"#FEF0E8",tc:"#7B3A0A",
+    desc:"Evaluar y Diagnosticar — Plan 60 días",quarter:"Q3",
+    steps:[
+      {icon:"◉",title:"Plan de mejora 60 días",desc:"Documento formal con compromisos específicos, indicadores y consecuencias acordadas."},
+      {icon:"◈",title:"Revisión de motivación",desc:"Conversación estructurada para identificar factores de desmotivación y explorar opciones."},
+      {icon:"→",title:"Seguimiento semanal",desc:"Check-in semanal con el líder directo para monitorear avance y remover obstáculos."},
+      {icon:"★",title:"Decisión en 60 días",desc:"Al término del plan: continuar con ajuste de rol, reubicar o iniciar proceso de desvinculación."},
+    ]},
+  "Colaborador Efectivo":{ruta:"Ruta 1",name:"Talento de Oportunidad",color:"#888780",bg:"#F1EFE8",tc:"#444441",
+    desc:"Identificar y Seleccionar — Estabilización",quarter:"Q4",
+    steps:[
+      {icon:"◎",title:"Claridad de expectativas",desc:"Conversación formal para alinear expectativas del rol, indicadores de éxito y reconocimiento."},
+      {icon:"◉",title:"Formación técnica puntual",desc:"Capacitación específica en habilidades técnicas requeridas para mejorar la efectividad operativa."},
+      {icon:"★",title:"Reconocimiento del aporte",desc:"Visibilizar su contribución operativa mediante reconocimiento formal en el equipo."},
+      {icon:"→",title:"Monitoreo semestral",desc:"Revisión semestral de desempeño con foco en estabilidad y satisfacción en el rol actual."},
+    ]},
+  "En Riesgo":{ruta:"Urgente",name:"Intervención Inmediata",color:"#C0392B",bg:"#F5C6CB",tc:"#7B1C1C",
+    desc:"Diagnóstico urgente — máximo 90 días",quarter:"—",
+    steps:[
+      {icon:"◉",title:"Diagnóstico integral urgente",desc:"Revisión completa de perfil WPI, historial de desempeño y entrevista de motivación en 2 semanas."},
+      {icon:"◈",title:"Identificar causa raíz",desc:"Determinar si es desalineación de rol, falta de competencias, motivación o fit cultural."},
+      {icon:"→",title:"Plan de mejora 90 días",desc:"Plan formal con metas específicas, recursos de apoyo y criterios de evaluación claros."},
+      {icon:"★",title:"Decisión a 90 días",desc:"Si no hay mejora significativa: redefinición profunda del rol, reubicación o proceso de salida digno."},
+    ]},
+};
+
+function getZone(d,p){const c=d<=T1?0:d<=T2?1:2,r=p<=T1?0:p<=T2?1:2;return ZONES[`${c}${r}`];}
+function initials(n){return n.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();}
+function shortName(n){const p=n.split(' ');return p[0]+(p[1]?' '+p[1][0]+'.':'');}
+
+function buildPerson(r){
+  const d_wpi=parseFloat(((r.cum+r.per2+r.tol+r.lid)/4).toFixed(2));
+  const d_pct_val=r.d_pct&&r.d_pct>0?r.d_pct/10:null;
+  const d=d_pct_val!==null?parseFloat(((d_wpi+d_pct_val)/2).toFixed(2)):d_wpi;
+  const ps=r.pot;
+  const motor=(r.amb+r.ene+r.ini)/3;
+  const inf=(r.lid+r.per+r.con)/3;
+  const ag=(r.fle+r.ana+r.inn)/3;
+  const est=(r.aut+r.tol)/2;
+  const pc=parseFloat((motor*0.30+inf*0.30+ag*0.25+est*0.15).toFixed(2));
+  return{n:r.n,cargo:r.cargo||'',d,ps,pc,motor:+motor.toFixed(1),inf:+inf.toFixed(1),ag:+ag.toFixed(1),est:+est.toFixed(1),
+    cum:r.cum,per:r.per2,tol:r.tol,lid:r.lid,
+    amb:r.amb,ene:r.ene,ini:r.ini,pot:r.pot,per_s:r.per,con:r.con,fle:r.fle,mul:r.mul,
+    ana:r.ana,inn:r.inn,det:r.det,pla:r.pla,reg:r.reg,per2:r.per2,
+    pre:r.pre,dem:r.dem,ext:r.ext,equ:r.equ,aut:r.aut,
+    zs:getZone(d,ps),zc:getZone(d,pc),
+    d_wpi,d_pct_val,clave:r.clave||false,critico:r.critico||false,
+    resultado:r.resultado||'',
+    tiene_segundo:r.tiene_segundo||false,
+    segundo:r.segundo||null,
+    segundo_n:r.segundo_n||null,segundo_cargo:r.segundo_cargo||null,segundo_d:r.segundo_d||0};
+}
+let people=RAW.map(buildPerson);
+
+// ── APLICAR EVALUACIONES DE DESEMPEÑO GUARDADAS EN LOCALSTORAGE ─────────────
+// Esto recalcula d, zs y zc de cada persona usando su evaluación real si existe.
+// Se llama cada vez que se reconstruye el array people.
+function applyEvaluaciones(){
+  people.forEach(p=>{
+    try{
+      const key='italcol_eval_'+p.n.replace(/ /g,'_').toLowerCase();
+      const raw=localStorage.getItem(key);
+      if(!raw)return;
+      const ev=JSON.parse(raw);
+      if(!ev||!ev.puntaje)return;
+      // puntaje ya viene en escala 1-10 desde la herramienta
+      const d_eval=parseFloat(ev.puntaje);
+      // Promedio entre desempeño WPI y evaluación real
+      const d_nuevo=parseFloat(((p.d_wpi+d_eval)/2).toFixed(2));
+      p.d=d_nuevo;
+      p.d_pct_val=d_eval;
+      p.zs=getZone(d_nuevo,p.ps);
+      p.zc=getZone(d_nuevo,p.pc);
+    }catch(e){}
+  });
+}
+applyEvaluaciones();
+
+let activeCompany='italcol';
+
+function switchCompany(company){
+  activeCompany=company;
+  if(company==='italcol'){
+    RAW=RAW_ITALCOL.slice();PENDING=PENDING_ITALCOL.slice();
+  } else if(company==='italfoods'){
+    RAW=RAW_ITALFOODS.slice();PENDING=PENDING_ITALFOODS.slice();
+  } else {
+    RAW=RAW_REGIONAL.slice();PENDING=PENDING_REGIONAL.slice();
+  }
+  people=RAW.map(buildPerson);
+  applyEvaluaciones();
+  selectedIdx=null;cmpA=null;cmpB=null;
+  document.querySelectorAll('.company-btn').forEach(b=>{
+    b.classList.toggle('active',b.dataset.company===company);
+  });
+  const sub=document.querySelector('.db-sub');
+  if(sub) sub.textContent=company==='italcol'?'Evaluación de desempeño vs. potencial | '+people.length+' líderes | Italcol':company==='italfoods'?'Evaluación de desempeño vs. potencial | '+people.length+' líderes | Italfoods':'Desempeño vs. potencial | '+people.length+' líderes | Regional Centro Funza';
+  buildKPIs();buildList();buildPendingSection();
+  activeFilter='todos';
+  document.querySelectorAll('.pill').forEach((p,i)=>p.classList.toggle('active',i===0));
+  currentView='ninebox';
+  document.querySelectorAll('.nav-tab').forEach((b,i)=>b.classList.toggle('active',i===0));
+  const fp=document.getElementById('filter-pills');
+  if(fp)fp.style.display='flex';
+  document.getElementById('chart-title').textContent='Nine Box';
+  document.getElementById('chart-content').innerHTML=`<div class="scatter-wrap"><canvas id="nb"></canvas><div class="nb-tooltip" id="tip"></div></div>`;
+  drawChart();
+  saveState();
+}
+
+function saveState(){try{localStorage.setItem('italcol_state',JSON.stringify({mode,activeFilter,selectedIdx,currentView,activeCompany}));}catch(e){}}
+function loadState(){try{const s=JSON.parse(localStorage.getItem('italcol_state')||'{}');if(s.mode)mode=s.mode;if(s.activeFilter)activeFilter=s.activeFilter;if(typeof s.selectedIdx==='number')selectedIdx=s.selectedIdx;if(s.currentView)currentView=s.currentView;if(s.activeCompany&&s.activeCompany!==activeCompany){activeCompany=s.activeCompany;RAW=activeCompany==='italfoods'?RAW_ITALFOODS.slice():activeCompany==='regional'?RAW_REGIONAL.slice():RAW_ITALCOL.slice();PENDING=activeCompany==='italfoods'?PENDING_ITALFOODS.slice():activeCompany==='regional'?PENDING_REGIONAL.slice():PENDING_ITALCOL.slice();people=RAW.map(buildPerson);}}catch(e){}}
+let mode='simple',activeFilter='todos',selectedIdx=null,currentView='ninebox';
+loadState();
+const pv=p=>mode==='simple'?p.ps:p.pc;
+const pz=p=>mode==='simple'?p.zs:p.zc;
+
+function buildKPIs(){
+  const total=people.length;
+  const talent=people.filter(p=>pz(p).l==='Talento Alto Potencial').length;
+  const riesgo=people.filter(p=>pz(p).l==='En Riesgo').length;
+  const clave=people.filter(p=>['Colaborador Clave','Destacado'].includes(pz(p).l)).length;
+  const avgD=+(people.reduce((a,p)=>a+p.d,0)/total).toFixed(1);
+  const kpis=[
+    {l:"Líderes evaluados",v:total,s:`datos WPI · ${PENDING.length} pendientes`,bar:"#1B2A6B",pct:100},
+    {l:"Talento Alto Potencial",v:talent,s:`${Math.round(talent/total*100)}% del equipo`,bar:"#3A7D1E",pct:talent/total*100},
+    {l:"Clave / Destacado",v:clave,s:`${Math.round(clave/total*100)}% del equipo`,bar:"#5A9E3A",pct:clave/total*100},
+    {l:"En Riesgo",v:riesgo,s:`${Math.round(riesgo/total*100)}% del equipo`,bar:"#C0392B",pct:riesgo/total*100},
+    {l:"Promedio desempeño",v:avgD,s:"escala 1–10",bar:"#E8631A",pct:avgD*10},
+  ];
+  document.getElementById('kpi-row').innerHTML=kpis.map(k=>`
+    <div class="kpi">
+      <div class="kpi-label">${k.l}</div>
+      <div class="kpi-val">${k.v}</div>
+      <div class="kpi-sub">${k.s}</div>
+      <div class="kpi-bar"><div style="height:3px;border-radius:2px;background:${k.bar};width:${Math.round(k.pct)}%;"></div></div>
+    </div>`).join('');
+}
+
+function setView(v,btn){
+  currentView=v;saveState();
+  document.querySelectorAll('.nav-tab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const fp=document.getElementById('filter-pills');
+  const ct=document.getElementById('chart-title');
+  if(v==='ninebox'){
+    ct.textContent='Nine Box';
+    fp.style.display='flex';
+    document.getElementById('chart-content').innerHTML=`<div class="scatter-wrap"><canvas id="nb"></canvas><div class="nb-tooltip" id="tip"></div></div>`;
+    drawChart();
+  } else if(v==='wpi'){
+    ct.textContent='Perfil WPI Completo — selecciona un líder';
+    fp.style.display='none';
+    document.getElementById('chart-content').innerHTML=selectedIdx!==null?buildWPIFull(selectedIdx):`<div style="padding:40px;text-align:center;color:var(--color-text-secondary);font-size:12px;">Selecciona un líder en la lista de la derecha</div>`;
+  } else if(v==='pdi'){
+    ct.textContent='Plan de Desarrollo Individual — selecciona un líder';
+    fp.style.display='none';
+    document.getElementById('chart-content').innerHTML=selectedIdx!==null?buildPDI(selectedIdx):`<div style="padding:40px;text-align:center;color:var(--color-text-secondary);font-size:12px;">Selecciona un líder en la lista de la derecha</div>`;
+  } else if(v==='comparar'){
+    ct.textContent='Comparación de perfiles — sucesor vs. titular';
+    fp.style.display='none';
+    document.getElementById('chart-content').innerHTML=buildComparar();
+  } else if(v==='segundos'){
+    ct.textContent='Segundos y sucesores — plan de desarrollo';
+    fp.style.display='none';
+    document.getElementById('chart-content').innerHTML=buildSegundos();
+  }
+}
+
+function buildWPIFull(i){
+  const p=people[i];
+  const vals={amb:p.amb,ene:p.ene,ini:p.ini,pot:p.pot,per_s:p.per_s,con:p.con,fle:p.fle,mul:p.mul,
+    ana:p.ana,inn:p.inn,det:p.det,cum:p.cum,pla:p.pla,reg:p.reg,per2:p.per2,
+    pre:p.pre,dem:p.dem,ext:p.ext,equ:p.equ,aut:p.aut,tol:p.tol,lid:p.lid};
+  const z=pz(p);
+  let html=`<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+    <div class="avatar" style="background:${z.bg};color:${z.tc};">${initials(p.n)}</div>
+    <div>
+      <div style="font-size:13px;font-weight:500;color:var(--color-text-primary);">${p.n}</div>
+      <div class="zone-badge" style="background:${z.st};color:#fff;">${z.l}</div>
+    </div>
+    <div style="margin-left:auto;text-align:right;">
+      <div style="font-size:10px;color:var(--color-text-secondary);">Desempeño / Potencial</div>
+      <div style="font-size:16px;font-weight:500;color:${z.st};">${p.d.toFixed(1)} / ${typeof pv(p)==='number'&&pv(p)%1!==0?pv(p).toFixed(1):pv(p)}</div>
+    </div>
+  </div><div class="wpi-section">`;
+  WPI_DIMS.forEach(dim=>{
+    html+=`<div class="wpi-dim">
+      <div class="wpi-dim-title" style="background:${dim.bg};color:${dim.color};">${dim.name}</div>
+      <div class="wpi-bars">`;
+    dim.vars.forEach(v=>{
+      const val=vals[v.k]||0;
+      const barColor=val>=8?'#3A7D1E':val>=6?'#5A9E3A':val>=4?'#C8A800':val>=2?'#D9823A':'#C0392B';
+      const textColor=val>=8?'#1A4A0A':val>=6?'#1E4D0F':val>=4?'#5C4A00':val>=2?'#7B3A0A':'#7B1C1C';
+      html+=`<div class="wpi-bar-row">
+        <div class="wpi-bar-name">${v.l}</div>
+        <div class="wpi-bar-track"><div class="wpi-bar-fill" style="width:${val*10}%;background:${barColor};"></div></div>
+        <div class="wpi-bar-val" style="color:${textColor};">${val}</div>
+      </div>`;
+    });
+    html+=`</div></div>`;
+  });
+  html+=`</div>`;
+  return html;
+}
+
+const COURSERA={
+  liderazgo:[
+    {t:"Leading People and Teams Specialization",u:"https://www.coursera.org/specializations/leading-teams",inst:"U. Michigan",hrs:"4 meses",skill:"Liderazgo, influencia, equipos"},
+    {t:"Strategic Leadership and Management",u:"https://www.coursera.org/specializations/strategic-leadership",inst:"U. Illinois",hrs:"6 meses",skill:"Liderazgo estratégico, diseño org."},
+    {t:"Inspiring Leadership through Emotional Intelligence",u:"https://www.coursera.org/learn/emotional-intelligence-leadership",inst:"Case Western",hrs:"~10 hrs",skill:"IE, liderazgo resonante"},
+  ],
+  influencia:[
+    {t:"Influence, Negotiation & Communication",u:"https://www.coursera.org/learn/negotiation-conflict-management",inst:"Yale / Coursera",hrs:"~12 hrs",skill:"Persuasión, negociación"},
+    {t:"Communication and Interpersonal Skills at Work",u:"https://www.coursera.org/learn/communication-interpersonal-skills",inst:"U. Leeds",hrs:"~15 hrs",skill:"Confianza social, persuasión"},
+    {t:"Inspire Leadership: Executive Presence",u:"https://www.coursera.org/learn/executive-presence-leadership",inst:"Coursera / Babson",hrs:"~8 hrs",skill:"Presencia ejecutiva, influencia"},
+  ],
+  emocional:[
+    {t:"Emotional and Social Intelligence",u:"https://www.coursera.org/learn/emotional-and-social-intelligence",inst:"UC Davis",hrs:"~10 hrs",skill:"Autocontrol, tolerancia al estrés"},
+    {t:"Science of Well-Being",u:"https://www.coursera.org/learn/the-science-of-well-being",inst:"Yale",hrs:"~19 hrs",skill:"Resiliencia, manejo de presión"},
+    {t:"Mindfulness and Resilience to Stress at Work",u:"https://www.coursera.org/learn/mindfulness-resilience-stress-at-work",inst:"UC Berkeley",hrs:"~8 hrs",skill:"Tolerancia al estrés, autocontrol"},
+  ],
+  analitico:[
+    {t:"Business Analytics Specialization",u:"https://www.coursera.org/specializations/business-analytics",inst:"U. Pennsylvania",hrs:"~5 meses",skill:"Pensamiento analítico, datos"},
+    {t:"Critical Thinking & Problem Solving",u:"https://www.coursera.org/learn/critical-thinking-problem-solving",inst:"Rochester",hrs:"~20 hrs",skill:"Análisis, resolución problemas"},
+    {t:"Data-Driven Decision Making",u:"https://www.coursera.org/learn/decision-making",inst:"PwC",hrs:"~9 hrs",skill:"Pensamiento analítico, decisiones"},
+  ],
+  innovacion:[
+    {t:"Design Thinking for Innovation",u:"https://www.coursera.org/learn/uva-darden-design-thinking-innovation",inst:"U. Virginia",hrs:"~14 hrs",skill:"Innovación, creatividad"},
+    {t:"Innovation Through Design",u:"https://www.coursera.org/learn/innovation-through-design",inst:"U. Sydney",hrs:"~24 hrs",skill:"Pensamiento innovador"},
+    {t:"Creative Thinking: Techniques and Tools for Success",u:"https://www.coursera.org/learn/creative-thinking-techniques-and-tools-for-success",inst:"Imperial College",hrs:"~10 hrs",skill:"Creatividad, innovación"},
+  ],
+  ejecucion:[
+    {t:"Project Management Professional Certificate",u:"https://www.coursera.org/professional-certificates/google-project-management",inst:"Google",hrs:"~6 meses",skill:"Planificación, cumplimiento, seguimiento"},
+    {t:"Work Smarter, Not Harder: Time Management",u:"https://www.coursera.org/learn/work-smarter-not-harder",inst:"UC Irvine",hrs:"~5 hrs",skill:"Planificación, persistencia"},
+    {t:"Everyday Excel Specialization",u:"https://www.coursera.org/specializations/everyday-excel",inst:"U. Colorado",hrs:"~3 meses",skill:"Atención al detalle, ejecución"},
+  ],
+  relacional:[
+    {t:"Everyday Leadership",u:"https://www.coursera.org/learn/everyday-leadership-b",inst:"Unilever / Coursera",hrs:"~6 hrs",skill:"Democrático, equipos, empatía"},
+    {t:"High Performance Collaboration: Leadership",u:"https://www.coursera.org/learn/leadership-collaboration",inst:"Northwestern",hrs:"~12 hrs",skill:"Trabajo en equipo, democrático"},
+    {t:"Communication in the 21st Century Workplace",u:"https://www.coursera.org/learn/communication-in-the-workplace",inst:"UC Irvine",hrs:"~7 hrs",skill:"Extroversión, relacional"},
+  ],
+  estrategia:[
+    {t:"Advanced Leadership Skills for the 21st Century",u:"https://www.coursera.org/specializations/advanced-leadership-skills",inst:"Coursera / CU",hrs:"~4 meses",skill:"Liderazgo estratégico avanzado"},
+    {t:"Strategic Thinking Specialization",u:"https://www.coursera.org/specializations/strategic-thinking",inst:"U. Michigan",hrs:"~4 meses",skill:"Pensamiento estratégico, visión"},
+    {t:"Business Strategy",u:"https://www.coursera.org/learn/business-strategy",inst:"U. Virginia",hrs:"~17 hrs",skill:"Estrategia, toma de decisiones"},
+  ],
+};
+
+const WPI_TO_COURSERA={
+  lid:'liderazgo', pot:'liderazgo', amb:'estrategia',
+  per:'influencia', con:'influencia', fle:'emocional',
+  ana:'analitico', inn:'innovacion',
+  cum:'ejecucion', pla:'ejecucion', det:'ejecucion', reg:'ejecucion', per2:'ejecucion',
+  pre:'relacional', dem:'relacional', equ:'relacional', ext:'relacional',
+  aut:'emocional', tol:'emocional',
+  ene:'liderazgo', ini:'liderazgo', mul:'ejecucion',
+};
+
+const WPI_DEF={
+  amb:{l:"Ambición",def:"Deseo de progreso profesional, orientación al logro y motivación por alcanzar posiciones de mayor responsabilidad y éxito.",dim:"Energía e Impulso"},
+  ene:{l:"Energía",def:"Nivel de dinamismo, actividad y disposición para mantener un ritmo de trabajo alto.",dim:"Energía e Impulso"},
+  ini:{l:"Iniciativa",def:"Disposición a actuar sin necesidad de instrucciones constantes; proactividad frente a oportunidades o problemas.",dim:"Energía e Impulso"},
+  lid:{l:"Liderazgo",def:"Tendencia a asumir control, dirigir a otros y ejercer influencia dentro del grupo.",dim:"Energía e Impulso"},
+  pot:{l:"Potencial de liderazgo",def:"Indicador integrado que refleja la combinación de rasgos asociados con la capacidad futura para desempeñar roles de liderazgo.",dim:"Energía e Impulso"},
+  per_s:{l:"Persuasión",def:"Capacidad para influir en las opiniones y decisiones de otros mediante argumentos o habilidades sociales.",dim:"Energía e Impulso"},
+  con:{l:"Confianza social",def:"Seguridad al interactuar con otros, hablar en público o defender ideas frente a grupos.",dim:"Energía e Impulso"},
+  fle:{l:"Flexibilidad",def:"Capacidad de adaptarse a cambios, nuevas demandas y diferentes formas de trabajar.",dim:"Energía e Impulso"},
+  mul:{l:"Multi-Tarea",def:"Capacidad y preferencia por manejar múltiples actividades simultáneamente sin perder efectividad.",dim:"Energía e Impulso"},
+  ana:{l:"Pensamiento Analítico",def:"Tendencia a analizar información de manera lógica, estructurada y basada en datos antes de tomar decisiones.",dim:"Resolución de Problemas"},
+  inn:{l:"Innovación",def:"Tendencia a generar ideas nuevas, cuestionar lo establecido y buscar mejoras creativas.",dim:"Resolución de Problemas"},
+  det:{l:"Atención al detalle",def:"Grado en que la persona es cuidadosa, precisa y minuciosa al revisar información y ejecutar tareas.",dim:"Ejecución"},
+  cum:{l:"Cumplimiento de compromisos",def:"Nivel de responsabilidad y confiabilidad para cumplir promesas, tareas y plazos acordados.",dim:"Ejecución"},
+  pla:{l:"Planificación",def:"Tendencia a organizar el trabajo con anticipación, estructurar actividades y prever recursos.",dim:"Ejecución"},
+  reg:{l:"Seguimiento de reglas",def:"Grado en que la persona respeta normas, procedimientos y estructuras formales.",dim:"Ejecución"},
+  per2:{l:"Persistencia",def:"Tendencia a mantener el esfuerzo frente a obstáculos o dificultades hasta lograr el objetivo.",dim:"Ejecución"},
+  pre:{l:"Preocupación por los demás",def:"Sensibilidad hacia las necesidades y emociones de otros; inclinación a apoyar y considerar el bienestar ajeno.",dim:"Relacional"},
+  dem:{l:"Democrático",def:"Preferencia por involucrar a otros en la toma de decisiones y fomentar participación y consenso.",dim:"Relacional"},
+  ext:{l:"Extroversión",def:"Nivel de sociabilidad, expresividad y comodidad al interactuar con otras personas.",dim:"Relacional"},
+  equ:{l:"Trabajo en equipo",def:"Preferencia por colaborar, cooperar y coordinar esfuerzos con otros en lugar de trabajar de forma aislada.",dim:"Relacional"},
+  aut:{l:"Autocontrol",def:"Capacidad para mantener la calma y regular impulsos en situaciones exigentes.",dim:"Presión y Estrés"},
+  tol:{l:"Tolerancia al estrés",def:"Capacidad para mantener estabilidad emocional bajo presión o en entornos demandantes.",dim:"Presión y Estrés"},
+};
+
+const NEXT_LEVEL={
+  "En Riesgo":       {to:"Plan de Acción",     desc:"Estabilizar desempeño básico"},
+  "Plan de Acción":  {to:"En Desarrollo",      desc:"Consolidar cumplimiento y energía"},
+  "Colaborador Efectivo":{to:"En Desarrollo",  desc:"Elevar potencial e iniciativa"},
+  "En Desarrollo":   {to:"Destacado",          desc:"Pasar de ejecución a impacto"},
+  "Evaluar Rol":     {to:"Colaborador Clave",  desc:"Alinear potencial con desempeño"},
+  "Especialista":    {to:"Colaborador Clave",  desc:"Ampliar liderazgo e influencia"},
+  "Destacado":       {to:"Colaborador Clave",  desc:"Sumar influencia y pensamiento estratégico"},
+  "Colaborador Clave":{to:"Talento Alto Potencial",desc:"Proyectar a nivel ejecutivo"},
+  "Talento Alto Potencial":{to:"Consolidación ejecutiva",desc:"Preparar sucesión y legado"},
+};
+
+function getCoursera(brechasKeys){
+  const cats=new Set();
+  brechasKeys.forEach(k=>{if(WPI_TO_COURSERA[k])cats.add(WPI_TO_COURSERA[k]);});
+  if(cats.size===0)cats.add('estrategia');
+  const result=[];
+  cats.forEach(cat=>{if(COURSERA[cat])result.push(...COURSERA[cat].slice(0,2));});
+  return result.slice(0,4);
+}
+
+function buildPDI(i){
+  const p=people[i];
+  const z=pz(p);
+  const ruta=RUTAS[z.l]||RUTAS["En Riesgo"];
+  const nx=NEXT_LEVEL[z.l]||{to:"Consolidación",desc:"Seguir fortaleciendo"};
+  let evalReal=null;
+  try{
+    const storageKey='italcol_eval_'+p.n.replace(/ /g,'_').toLowerCase();
+    const raw=localStorage.getItem(storageKey);
+    if(raw)evalReal=JSON.parse(raw);
+  }catch(e){}
+  const evalBannerHtml=evalReal?`
+    <div style="background:#EAF3DE;border:1px solid #3B6D1144;border-radius:var(--border-radius-lg);padding:10px 14px;margin-bottom:10px;display:flex;gap:10px;align-items:flex-start;">
+      <div style="font-size:20px;">✅</div>
+      <div style="flex:1;">
+        <div style="font-size:11px;font-weight:500;color:#1A4A0A;margin-bottom:3px;">Evaluación de desempeño real disponible — ${evalReal.fecha}</div>
+        <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:5px;">
+          <span style="font-size:13px;font-weight:700;color:#3B6D11;">${evalReal.puntaje}/10</span>
+          <span style="font-size:10px;padding:2px 8px;border-radius:10px;background:#3B6D11;color:#fff;">${evalReal.zona}</span>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;">
+          ${Object.entries(evalReal.dimScores).map(([k,v])=>{
+            const labels={resultados:'Resultados',liderazgo:'Liderazgo',ejecucion:'Ejecución',estrategia:'Estrategia',cultura:'Cultura'};
+            const col=v>=7.5?'#3B6D11':v>=5.5?'#C8A800':'#E8631A';
+            return`<div style="font-size:9px;color:${col};font-weight:500;">${labels[k]||k}: ${v}/10</div>`;
+          }).join('')}
+        </div>
+        ${evalReal.derailment&&evalReal.derailment.length?`<div style="font-size:9px;color:#C0392B;margin-top:4px;">⚠ ${evalReal.derailment.length} señal(es) de riesgo detectada(s)</div>`:''}
+        ${evalReal.logroDestacado?`<div style="font-size:9px;color:#27500A;margin-top:3px;font-style:italic;">"${evalReal.logroDestacado.slice(0,120)}${evalReal.logroDestacado.length>120?'…':''}"</div>`:''}
+      </div>
+    </div>`:`
+    <div style="background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-md);padding:8px 10px;margin-bottom:10px;display:flex;align-items:center;gap:8px;">
+      <div style="font-size:16px;">📋</div>
+      <div>
+        <div style="font-size:10px;font-weight:500;color:var(--color-text-primary);">Sin evaluación de desempeño real aún</div>
+        <div style="font-size:9px;color:var(--color-text-secondary);">Usa la herramienta de Evaluación de Desempeño y guarda el resultado para verlo aquí integrado al PDI.</div>
+      </div>
+    </div>`;
+  const vals={cum:p.cum,per2:p.per2,tol:p.tol,lid:p.lid,amb:p.amb,ene:p.ene,ini:p.ini,
+    ana:p.ana,inn:p.inn,fle:p.fle,per_s:p.per_s,con:p.con,det:p.det,pla:p.pla,
+    reg:p.reg,pre:p.pre,dem:p.dem,ext:p.ext,equ:p.equ,aut:p.aut,tol:p.tol};
+  const allVars=[
+    {k:"cum",l:"Cumpl. Compromisos"},{k:"per2",l:"Persistencia"},{k:"tol",l:"Tol. Estrés"},
+    {k:"lid",l:"Liderazgo"},{k:"amb",l:"Ambición"},{k:"ene",l:"Energía"},
+    {k:"ini",l:"Iniciativa"},{k:"ana",l:"Pens. Analítico"},{k:"inn",l:"Innovación"},
+    {k:"fle",l:"Flexibilidad"},{k:"per_s",l:"Persuasión"},{k:"con",l:"Conf. Social"},
+    {k:"det",l:"Atenc. Detalle"},{k:"pla",l:"Planificación"},{k:"reg",l:"Seg. Reglas"},
+    {k:"pre",l:"Preoc. Demás"},{k:"dem",l:"Democrático"},{k:"ext",l:"Extroversión"},
+    {k:"equ",l:"Trabajo Equipo"},{k:"aut",l:"Autocontrol"},
+  ];
+  const brechas=allVars.filter(v=>(vals[v.k]||0)<6).sort((a,b)=>(vals[a.k]||0)-(vals[b.k]||0)).slice(0,4);
+  const fortalezas=allVars.filter(v=>(vals[v.k]||0)>=8).slice(0,4);
+  const brechasKeys=brechas.map(v=>v.k);
+  const cursos=getCoursera(brechasKeys);
+  const meses70=gen70(z.l,brechas,fortalezas,p);
+  const items20=gen20(z.l,brechas,fortalezas);
+  const cursosHtml=cursos.map(c=>`
+    <a href="${c.u}" target="_blank" style="display:flex;align-items:flex-start;gap:8px;padding:7px 9px;border-radius:var(--border-radius-md);border:0.5px solid #534AB733;background:#EEEDFE;margin-bottom:5px;text-decoration:none;cursor:pointer;">
+      <div style="font-size:16px;flex-shrink:0;">📚</div>
+      <div style="flex:1;">
+        <div style="font-size:11px;font-weight:500;color:#3C3489;">${c.t}</div>
+        <div style="font-size:10px;color:#534AB7;margin-top:1px;">${c.inst} · ${c.hrs}</div>
+        <div style="font-size:10px;color:#534AB7;opacity:0.8;">${c.skill}</div>
+      </div>
+      <div style="font-size:9px;color:#534AB7;white-space:nowrap;margin-top:2px;">→ Coursera</div>
+    </a>`).join('');
+  return`<div>
+  ${evalBannerHtml}
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+    <div class="avatar" style="background:${z.bg};color:${z.tc};">${initials(p.n)}</div>
+    <div style="flex:1;">
+      <div style="font-size:13px;font-weight:500;color:var(--color-text-primary);">${p.n}</div>
+      <div class="zone-badge" style="background:${z.st};color:#fff;">${z.l}</div>
+    </div>
+    <div style="text-align:right;">
+      <div style="font-size:10px;color:var(--color-text-secondary);">Desempeño / Potencial</div>
+      <div style="font-size:15px;font-weight:500;color:${z.st};">${p.d.toFixed(1)} / ${typeof pv(p)==='number'&&pv(p)%1!==0?pv(p).toFixed(1):pv(p)}</div>
+    </div>
+  </div>
+  <div style="background:${ruta.bg};border:0.5px solid ${ruta.color}44;border-radius:var(--border-radius-lg);padding:10px 12px;margin-bottom:10px;">
+    <div style="font-size:10px;color:${ruta.color};font-weight:500;margin-bottom:2px;">RUTA 6 MESES → PRÓXIMO NIVEL</div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <div style="font-size:12px;font-weight:500;color:${ruta.tc};">${z.l}</div>
+      <div style="font-size:14px;color:${ruta.color};">→</div>
+      <div style="font-size:12px;font-weight:500;color:${ruta.color};background:${ruta.color}22;padding:2px 8px;border-radius:10px;">${nx.to}</div>
+    </div>
+    <div style="font-size:10px;color:${ruta.tc};opacity:0.8;margin-top:3px;">${nx.desc}</div>
+  </div>
+  <div style="margin-bottom:10px;">
+    <div style="display:flex;align-items:center;gap:6px;margin-bottom:7px;">
+      <div style="background:#3B6D11;color:#fff;font-size:12px;font-weight:500;padding:2px 9px;border-radius:20px;">70%</div>
+      <div style="font-size:11px;font-weight:500;color:var(--color-text-primary);">Aprendiendo haciendo — plan mes a mes (6 meses)</div>
+    </div>
+    ${meses70}
+  </div>
+  <div style="margin-bottom:10px;">
+    <div style="display:flex;align-items:center;gap:6px;margin-bottom:7px;">
+      <div style="background:#185FA5;color:#fff;font-size:12px;font-weight:500;padding:2px 9px;border-radius:20px;">20%</div>
+      <div style="font-size:11px;font-weight:500;color:var(--color-text-primary);">Relaciones — mentoring, coaching y feedback 360°</div>
+    </div>
+    ${items20}
+  </div>
+  <div style="margin-bottom:10px;">
+    <div style="display:flex;align-items:center;gap:6px;margin-bottom:7px;">
+      <div style="background:#534AB7;color:#fff;font-size:12px;font-weight:500;padding:2px 9px;border-radius:20px;">10%</div>
+      <div style="font-size:11px;font-weight:500;color:var(--color-text-primary);">Formación — cursos Coursera recomendados</div>
+    </div>
+    <div style="font-size:10px;color:var(--color-text-secondary);margin-bottom:6px;">Seleccionados según tus brechas WPI prioritarias. Haz clic para abrir en Coursera.</div>
+    ${cursosHtml}
+  </div>
+  <div style="display:grid;gap:7px;margin-top:4px;">
+    ${brechas.length?`<div style="background:#FEF0E8;border:0.5px solid #E8631A44;border-radius:var(--border-radius-md);padding:10px 12px;">
+      <div style="font-size:10px;font-weight:500;color:#E8631A;margin-bottom:8px;">⚠ Competencias a desarrollar (puntaje &lt; 6)</div>
+      ${brechas.map(v=>{const def=WPI_DEF[v.k]||{def:'',dim:''};return`<div style="margin-bottom:8px;padding-bottom:8px;border-bottom:0.5px solid #E8631A22;">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">
+          <div style="width:80px;flex-shrink:0;height:5px;background:#E8631A18;border-radius:3px;overflow:hidden;"><div style="height:100%;width:${(vals[v.k]||0)*10}%;background:#E8631A;border-radius:3px;"></div></div>
+          <span style="font-size:11px;font-weight:500;color:#7B3A0A;">${v.l}</span>
+          <span style="font-size:11px;font-weight:500;color:#E8631A;margin-left:auto;">${vals[v.k]||0}/10</span>
+        </div>
+        <div style="font-size:9px;color:#7B3A0A;opacity:0.7;margin-bottom:2px;">Dimensión: ${def.dim}</div>
+        <div style="font-size:10px;color:#7B3A0A;line-height:1.5;">${def.def}</div>
+      </div>`}).join('')}
+    </div>`:''}
+    ${fortalezas.length?`<div style="background:#EAF3DE;border:0.5px solid #3B6D1144;border-radius:var(--border-radius-md);padding:10px 12px;">
+      <div style="font-size:10px;font-weight:500;color:#3B6D11;margin-bottom:8px;">✓ Fortalezas a aprovechar (puntaje ≥ 8)</div>
+      ${fortalezas.map(v=>{const def=WPI_DEF[v.k]||{def:'',dim:''};return`<div style="margin-bottom:8px;padding-bottom:8px;border-bottom:0.5px solid #3A7D1E22;">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">
+          <div style="width:80px;flex-shrink:0;height:5px;background:#3A7D1E18;border-radius:3px;overflow:hidden;"><div style="height:100%;width:${(vals[v.k]||0)*10}%;background:#3A7D1E;border-radius:3px;"></div></div>
+          <span style="font-size:11px;font-weight:500;color:#27500A;">${v.l}</span>
+          <span style="font-size:11px;font-weight:500;color:#3A7D1E;margin-left:auto;">${vals[v.k]||0}/10</span>
+        </div>
+        <div style="font-size:9px;color:#27500A;opacity:0.7;margin-bottom:2px;">Dimensión: ${def.dim}</div>
+        <div style="font-size:10px;color:#27500A;line-height:1.5;">${def.def}</div>
+      </div>`}).join('')}
+    </div>`:''}
+  </div>
+</div>`;
+}
+
+function gen70(zona,brechas,fortalezas,p){
+  const colores=["#1B2A6B","#185FA5","#3B6D11","#534AB7","#993556","#E8631A"];
+  const bNames=brechas.map(b=>b.l);
+  const fNames=fortalezas.map(f=>f.l);
+  const templates={
+    "Talento Alto Potencial":[
+      {m:"Mes 1-2",icon:"▲",t:"Proyecto de alto impacto transversal",d:`Lidera un proyecto estratégico fuera de tu área habitual. Aplica tus fortalezas en ${fNames.slice(0,2).join(' y ')||'liderazgo'} para generar resultado visible al comité directivo.`},
+      {m:"Mes 2-3",icon:"◎",t:"Diseño y facilitación de comunidad de práctica",d:`Crea y facilita un espacio de aprendizaje para otros líderes en tu organización. Refuerza ${bNames[0]||'influencia'} enseñando lo que ya dominas.`},
+      {m:"Mes 3-4",icon:"→",t:"Exposición ante el comité directivo",d:`Presenta resultados o propuestas de mejora ante la alta dirección. Desarrolla presencia ejecutiva y capacidad de síntesis estratégica.`},
+      {m:"Mes 4-5",icon:"★",t:"Acompañar a un sucesor potencial",d:`Identifica y acompaña a un líder con potencial. Ejercer mentoría activa consolida tu propio liderazgo y fortalece ${bNames[1]||'pensamiento estratégico'}.`},
+      {m:"Mes 5-6",icon:"◉",t:"Colidera una iniciativa de cambio",d:`Colidera una transformación o mejora de proceso relevante. Documenta aprendizajes y prepara tu narrativa de liderazgo para sucesión.`},
+      {m:"Cierre",icon:"◈",t:"Evaluación 360° y plan de sucesión",d:`Solicita retroalimentación estructurada de pares, jefes y colaboradores. Con los resultados, actualiza tu plan de carrera y formaliza tu candidatura a rol de mayor responsabilidad.`},
+    ],
+    "Colaborador Clave":[
+      {m:"Mes 1",icon:"◉",t:"Diagnóstico de impacto y visibilidad",d:`Mapea en qué proyectos y decisiones ya tienes impacto real. Identifica dos oportunidades de mayor exposición aprovechando ${fNames.slice(0,2).join(' y ')||'tus fortalezas'}.`},
+      {m:"Mes 2",icon:"→",t:"Proyecto de mayor complejidad y alcance",d:`Acepta o propone un proyecto con más variables, stakeholders o incertidumbre de la que ya manejas. Es tu principal palanca para el 70%.`},
+      {m:"Mes 3",icon:"▲",t:"Cerrar la brecha crítica",d:`Diseña con tu jefe 2-3 acciones concretas en el trabajo para fortalecer ${bNames[0]||'la competencia más baja'}. Mide avance cada dos semanas.`},
+      {m:"Mes 4",icon:"◎",t:"Liderar decisiones sin autoridad formal",d:`Busca situaciones donde debas influir hacia arriba y hacia los lados. Ejercita ${bNames[1]||'influencia y pensamiento analítico'} en contextos de alta visibilidad.`},
+      {m:"Mes 5",icon:"★",t:"Mentorar a alguien de tu equipo",d:`Acompaña a un colaborador en su desarrollo. Quien enseña aprende el doble: activarás ${fNames[0]||'tus fortalezas'} y mejorarás en las brechas.`},
+      {m:"Mes 6",icon:"◈",t:"Retroalimentación y plan ejecutivo",d:`Pide un 360° formal. Usa los datos para construir una propuesta de valor personal clara ante la organización. Define los próximos 12 meses con tu líder.`},
+    ],
+    "Destacado":[
+      {m:"Mes 1",icon:"◎",t:"Referente técnico formal en tu área",d:`Solicita ser el punto de referencia para decisiones técnicas clave. Comparte conocimiento en sesiones de equipo. Usa ${fNames.slice(0,2).join(' y ')||'tus fortalezas'} para generar credibilidad.`},
+      {m:"Mes 2",icon:"→",t:"Cerrar brecha en liderazgo e influencia",d:`Define 3 situaciones reales de trabajo donde vas a practicar activamente ${bNames[0]||'la competencia de mayor brecha'}. Documenta resultados.`},
+      {m:"Mes 3",icon:"▲",t:"Facilitar o diseñar un proceso de mejora",d:`Lidera una iniciativa de mejora de proceso o eficiencia. Activa pensamiento analítico e innovación en situaciones reales.`},
+      {m:"Mes 4",icon:"◉",t:"Proyecto con impacto interfuncional",d:`Acepta un reto que involucre otras áreas. Esto te obliga a desarrollar influencia sin autoridad formal y a gestionar diversidad de perspectivas.`},
+      {m:"Mes 5",icon:"★",t:"Certificación interna o presentación externa",d:`Diseña y dicta una formación interna o participa en un evento del sector. Consolida tu posición como especialista.`},
+      {m:"Mes 6",icon:"◈",t:"Evaluación y plan de expansión de rol",d:`Analiza qué competencias relacionales y de liderazgo debes reforzar para dar el salto. Propón formalmente a tu líder una expansión de responsabilidades.`},
+    ],
+    "Especialista":[
+      {m:"Mes 1",icon:"★",t:"Documentar y transferir tu expertise",d:`Diseña un programa de formación o guía práctica basada en tu conocimiento técnico. Esto te posiciona como referente y activa ${fNames[0]||'planificación y atención al detalle'}.`},
+      {m:"Mes 2",icon:"◎",t:"Liderar una iniciativa de mejora operativa",d:`Propón y lidera una mejora en el área. Aquí practicas ${bNames[0]||'liderazgo e influencia'} en un entorno donde ya tienes credibilidad técnica.`},
+      {m:"Mes 3",icon:"→",t:"Participar en decisiones estratégicas",d:`Solicita participar en comités o reuniones de mayor nivel. Aporta desde tu expertise pero con foco en impacto estratégico.`},
+      {m:"Mes 4",icon:"◉",t:"Desarrollar relaciones fuera de tu silo",d:`Construye relaciones activas con líderes de otras áreas. Esto es clave para pasar de especialista a colaborador clave con influencia transversal.`},
+      {m:"Mes 5",icon:"▲",t:"Coliderar un proyecto interfuncional",d:`Acepta co-liderar un proyecto que cruce fronteras de área. Aprovecha ${fNames.slice(0,2).join(' y ')||'tus fortalezas'} mientras refuerzas ${bNames[0]||'liderazgo'}.`},
+      {m:"Mes 6",icon:"◈",t:"Conversación de carrera y visibilidad",d:`Presenta a tu líder un plan claro de hacia dónde quieres ir. Documenta logros y aprendizajes del semestre.`},
+    ],
+    "En Desarrollo":[
+      {m:"Mes 1",icon:"◈",t:"Clarificar expectativas y métricas de éxito",d:`Acuerda con tu líder exactamente qué significa 'buen desempeño' en tu rol en los próximos 6 meses. Define 3 indicadores concretos.`},
+      {m:"Mes 2",icon:"◉",t:"Fortalecer cumplimiento y persistencia",d:`Identifica las situaciones donde tu desempeño falla con más frecuencia. Diseña micro-hábitos y rutinas para cerrar esas brechas.`},
+      {m:"Mes 3",icon:"→",t:"Tomar responsabilidad en un proyecto nuevo",d:`Voluntarízate para liderar o co-liderar algo que aún no has hecho. La incomodidad controlada es el motor del desarrollo.`},
+      {m:"Mes 4",icon:"▲",t:"Desarrollar iniciativa y pensamiento analítico",d:`Busca problemas que nadie haya resuelto en tu área. Propón soluciones con datos. Comparte el análisis con tu equipo.`},
+      {m:"Mes 5",icon:"★",t:"Apalancarte en tus fortalezas",d:`Identifica el proyecto donde puedes aportar más usando lo que ya haces bien. El reconocimiento por logros concretos impulsa la motivación.`},
+      {m:"Mes 6",icon:"◎",t:"Revisión formal de avance y reajuste",d:`Presenta a tu líder los avances en los 3 indicadores acordados en el mes 1. Identifica qué funcionó y qué ajustar.`},
+    ],
+    "Evaluar Rol":[
+      {m:"Mes 1",icon:"◈",t:"Diagnóstico profundo de alineación",d:`Realiza una autoevaluación honesta: ¿Las responsabilidades actuales aprovechan ${fNames.slice(0,2).join(' y ')||'tus fortalezas'}?`},
+      {m:"Mes 2",icon:"◉",t:"Conversación de reubicación estratégica",d:`Si hay desalineación, propón formalmente una conversación sobre ajuste o cambio de rol con datos de tu perfil WPI.`},
+      {m:"Mes 3",icon:"→",t:"Proyecto transitorio de alto potencial",d:`Acepta un proyecto que te permita demostrar tu potencial real en ${fNames.slice(0,2).join(' y ')||'tus áreas de fortaleza'}.`},
+      {m:"Mes 4",icon:"▲",t:"Desarrollar la brecha crítica",d:`Ya sea en el rol actual o en uno nuevo, enfócate en cerrar ${bNames[0]||'la brecha más crítica'} con acciones concretas y medibles.`},
+      {m:"Mes 5",icon:"★",t:"Construir credibilidad en el nuevo espacio",d:`Genera resultados visibles en tu área de potencial. El éxito concreto es el mejor argumento para la promoción.`},
+      {m:"Mes 6",icon:"◎",t:"Evaluación y decisión de trayectoria",d:`Con tu líder y RRHH, evalúa el semestre y decide la siguiente etapa. Formaliza la decisión.`},
+    ],
+    "Plan de Acción":[
+      {m:"Mes 1",icon:"◉",t:"Plan de mejora 60 días — arranque inmediato",d:`Define con tu líder máximo 3 compromisos críticos que debes cumplir en los próximos 60 días.`},
+      {m:"Mes 2",icon:"◈",t:"Check-in semanal y ajuste rápido",d:`Mantén una conversación semanal de 15 minutos con tu jefe directo. El seguimiento cercano en este momento es apoyo.`},
+      {m:"Mes 3",icon:"→",t:"Fortalecer la brecha más urgente",d:`Identifica el hábito o comportamiento concreto que más te está costando. Diseña una rutina pequeña y específica.`},
+      {m:"Mes 4",icon:"▲",t:"Recuperar motivación y confianza",d:`Busca activamente situaciones donde puedas demostrar ${fNames[0]||'una fortaleza real'}. Un logro concreto, aunque pequeño, reactiva la energía.`},
+      {m:"Mes 5",icon:"★",t:"Demostrar consistencia",d:`La consistencia en el cumplimiento es el único indicador que cuenta en esta fase. Documenta cada compromiso cumplido.`},
+      {m:"Mes 6",icon:"◎",t:"Evaluación crítica: continuar o redefinir",d:`Con tu líder y RRHH, haz un balance honesto del semestre. Define si continúas, te reubicas o exploras una salida planificada.`},
+    ],
+    "Colaborador Efectivo":[
+      {m:"Mes 1",icon:"◎",t:"Clarificar valor y expectativas del rol",d:`Convierte tus años de experiencia en impacto medible. Define con tu líder qué indicadores demuestran que estás aportando al máximo.`},
+      {m:"Mes 2",icon:"◉",t:"Transferir conocimiento al equipo",d:`Organiza sesiones donde compartes lo que sabes mejor. Esto activa ${fNames[0]||'tus fortalezas'} y te posiciona como referente.`},
+      {m:"Mes 3",icon:"→",t:"Desarrollar iniciativa o energía",d:`Identifica un problema de tu área que nadie haya resuelto y propón una solución.`},
+      {m:"Mes 4",icon:"▲",t:"Aceptar un reto ligeramente mayor",d:`Busca una responsabilidad adicional que te incomode un poco. El crecimiento ocurre en el borde del área de confort.`},
+      {m:"Mes 5",icon:"★",t:"Fortalecer red interna y visibilidad",d:`Construye relaciones con líderes de otras áreas. La visibilidad amplia abre oportunidades que el trabajo silencioso no genera.`},
+      {m:"Mes 6",icon:"◈",t:"Conversación de carrera y reconocimiento",d:`Propón a tu líder una conversación sobre tus próximos pasos. Ven con logros documentados.`},
+    ],
+    "En Riesgo":[
+      {m:"Semana 1-2",icon:"◈",t:"Diagnóstico urgente de causas raíz",d:`Identifica con tu líder y RRHH si el bajo desempeño se debe a desalineación de rol, falta de recursos, motivación o competencias.`},
+      {m:"Mes 1",icon:"◉",t:"Definir 3 compromisos no negociables",d:`Establece con tu líder máximo 3 compromisos específicos, medibles y con fecha. Cumplirlos es la única forma de salir de esta zona.`},
+      {m:"Mes 2",icon:"→",t:"Estabilizar y generar un logro visible",d:`Consigue un logro concreto, aunque sea pequeño, que puedas mostrar. La evidencia de cambio recupera credibilidad.`},
+      {m:"Mes 3",icon:"▲",t:"Aprovechar una fortaleza real activamente",d:`Busca la situación donde puedes brillar genuinamente. Que tu jefe y tu equipo vean en qué sí eres bueno genera base de confianza.`},
+      {m:"Mes 4-5",icon:"★",t:"Consolidar mejora y desarrollar la brecha crítica",d:`Con mayor estabilidad, empieza a trabajar activamente en ${bNames[0]||'la competencia más baja'} usando situaciones reales del trabajo.`},
+      {m:"Mes 6",icon:"◎",t:"Evaluación crítica y decisión informada",d:`Con tu líder y RRHH, evalúa honestamente el semestre. Si hay mejora real: continuar. Si no: explorar reubicación o salida planificada.`},
+    ],
+  };
+  const plan=(templates[zona]||templates["En Desarrollo"]);
+  const colMap=["#1B2A6B","#185FA5","#3B6D11","#534AB7","#993556","#E8631A"];
+  return`<div style="display:grid;gap:5px;">
+    ${plan.map((item,idx)=>{
+      const col=colMap[idx%colMap.length];
+      return`<div style="display:flex;gap:8px;align-items:flex-start;padding:8px 10px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);border-left:3px solid ${col};">
+        <div style="flex-shrink:0;min-width:52px;">
+          <div style="font-size:9px;font-weight:500;color:${col};white-space:nowrap;">${item.m}</div>
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:500;color:var(--color-text-primary);">${item.t}</div>
+          <div style="font-size:10px;color:var(--color-text-secondary);line-height:1.4;margin-top:2px;">${item.d}</div>
+        </div>
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+
+function gen20(zona,brechas,fortalezas){
+  const bNm=brechas.length?brechas[0].l:'liderazgo';
+  const fNm=fortalezas.length?fortalezas[0].l:'tus fortalezas';
+  const items=[
+    {icon:"👥",t:`Mentoring con líder senior (quincenal)`,d:`Busca un mentor interno de nivel superior al tuyo. Agenda reuniones quincenales con agenda fija. Foco en ${bNm}.`},
+    {icon:"🎯",t:`Coaching ejecutivo (mensual)`,d:`Trabaja con un coach externo o interno durante 3-4 sesiones en el semestre. El coaching es la herramienta más efectiva para cambios de comportamiento en ${bNm} a nivel ejecutivo.`},
+    {icon:"🔄",t:`Feedback 360° estructurado (mes 2 y mes 6)`,d:`Solicita retroalimentación formal a 3 pares, 2 colaboradores y tu líder. Compara los resultados del mes 2 con los del mes 6 para medir tu progreso real.`},
+    {icon:"🤝",t:`Comunidad de práctica de líderes`,d:`Participa activamente en el grupo de líderes de Italcol. Comparte un aprendizaje mensual. Esto activa ${fNm} y amplía tu red de influencia interna.`},
+  ];
+  return`<div style="display:grid;gap:5px;">
+    ${items.map(item=>`<div style="display:flex;gap:9px;align-items:flex-start;padding:8px 10px;background:#E6F1FB;border-radius:var(--border-radius-md);border:0.5px solid #185FA533;">
+      <div style="font-size:16px;flex-shrink:0;">${item.icon}</div>
+      <div>
+        <div style="font-size:11px;font-weight:500;color:#0C447C;">${item.t}</div>
+        <div style="font-size:10px;color:#185FA5;line-height:1.4;margin-top:2px;">${item.d}</div>
+      </div>
+    </div>`).join('')}
+  </div>`;
+}
+
+let cmpA=null,cmpB=null;
+const SUCESOR_READY=['Talento Alto Potencial','Colaborador Clave','Destacado'];
+
+function buildComparar(){
+  const pA=cmpA!==null?people[cmpA]:null;
+  const pB=cmpB!==null?people[cmpB]:null;
+  const selectorHtml=(role,idx,color,label,sublabel)=>{
+    const sel=idx!==null?people[idx]:null;
+    const z=sel?pz(sel):null;
+    return`<div style="flex:1;background:var(--color-background-secondary);border-radius:var(--border-radius-lg);border:0.5px solid var(--color-border-tertiary);padding:10px 12px;">
+      <div style="font-size:10px;font-weight:500;color:${color};margin-bottom:1px;">${label}</div>
+      <div style="font-size:9px;color:var(--color-text-secondary);margin-bottom:6px;">${sublabel}</div>
+      <select onchange="setCmp('${role}',parseInt(this.value))"
+        style="width:100%;font-size:12px;padding:5px 8px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-primary);cursor:pointer;">
+        <option value="-1">${sel?'— cambiar':'— seleccionar persona —'}</option>
+        ${[...people].map((p,i)=>{const z2=pz(p);return`<option value="${i}" ${i===idx?'selected':''}>${p.n} · ${z2.l}</option>`;}).join('')}
+      </select>
+      ${sel?`<div style="margin-top:8px;display:flex;align-items:center;gap:8px;">
+        <div class="avatar" style="width:32px;height:32px;font-size:11px;background:${z.bg};color:${z.tc};">${initials(sel.n)}</div>
+        <div>
+          <div style="font-size:12px;font-weight:500;color:var(--color-text-primary);">${sel.n}</div>
+          <div style="font-size:10px;padding:1px 7px;border-radius:10px;display:inline-block;background:${z.st};color:#fff;">${z.l}</div>
+        </div>
+        <div style="margin-left:auto;text-align:right;">
+          <div style="font-size:10px;color:var(--color-text-secondary);">D / P</div>
+          <div style="font-size:13px;font-weight:500;color:${z.st};">${sel.d.toFixed(1)} / ${pv(sel)}</div>
+        </div>
+      </div>`:'<div style="font-size:11px;color:var(--color-text-secondary);margin-top:8px;">Selecciona un líder</div>'}
+    </div>`;
+  };
+  const VARS=[
+    {k:'lid',l:'Liderazgo'},{k:'pot',l:'Potencial liderazgo'},{k:'amb',l:'Ambición'},
+    {k:'ene',l:'Energía'},{k:'ini',l:'Iniciativa'},{k:'per_s',l:'Persuasión'},
+    {k:'con',l:'Conf. social'},{k:'fle',l:'Flexibilidad'},{k:'mul',l:'Multi-Tarea'},
+    {k:'ana',l:'Pens. Analítico'},{k:'inn',l:'Innovación'},
+    {k:'cum',l:'Cumpl. compromisos'},{k:'per2',l:'Persistencia'},
+    {k:'pla',l:'Planificación'},{k:'det',l:'Atenc. detalle'},{k:'reg',l:'Seg. reglas'},
+    {k:'pre',l:'Preoc. demás'},{k:'dem',l:'Democrático'},{k:'ext',l:'Extroversión'},{k:'equ',l:'Trabajo equipo'},
+    {k:'aut',l:'Autocontrol'},{k:'tol',l:'Tol. estrés'},
+  ];
+  function getFortalezasGerente(p){return VARS.filter(v=>(p[v.k]||0)>=7).sort((a,b)=>(p[b.k]||0)-(p[a.k]||0));}
+  function buildVeredicto(pb){
+    const zb=pz(pb);const esListo=SUCESOR_READY.includes(zb.l);
+    if(esListo){return`<div style="background:#EAF3DE;border:1.5px solid #3A7D1E;border-radius:var(--border-radius-lg);padding:12px 16px;display:flex;gap:12px;align-items:flex-start;margin-bottom:10px;"><div style="font-size:28px;flex-shrink:0;">✅</div><div><div style="font-size:13px;font-weight:500;color:#1A4A0A;margin-bottom:3px;">Sucesor listo o en vía de estarlo</div><div style="font-size:11px;color:#27500A;line-height:1.5;">${pb.n} está en la zona <b>${zb.l}</b>, uno de los cuadrantes de alto potencial del Nine Box.</div></div></div>`;}
+    else{return`<div style="background:#FEF0E8;border:1.5px solid #E8631A;border-radius:var(--border-radius-lg);padding:12px 16px;display:flex;gap:12px;align-items:flex-start;margin-bottom:10px;"><div style="font-size:28px;flex-shrink:0;">⏳</div><div><div style="font-size:13px;font-weight:500;color:#7B2A0A;margin-bottom:3px;">Aún no está preparado para la sucesión</div><div style="font-size:11px;color:#7B3A0A;line-height:1.5;">${pb.n} se encuentra en la zona <b>${zb.l}</b>. Debe avanzar a Talento Alto Potencial, Colaborador Clave o Destacado.</div></div></div>`;}
+  }
+  function buildCardGerente(pa){
+    const fortalezas=getFortalezasGerente(pa);const top=fortalezas.slice(0,6);
+    return`<div style="background:var(--color-background-primary);border:0.5px solid #185FA544;border-radius:var(--border-radius-lg);padding:12px;margin-bottom:10px;">
+      <div style="font-size:10px;font-weight:500;color:#185FA5;margin-bottom:8px;">⭐ Cualidades del gerente que el sucesor debe alcanzar</div>
+      <div style="display:grid;gap:5px;">${top.map(v=>{const val=pa[v.k]||0;const def=WPI_DEF[v.k]||{def:'',dim:''};return`<div style="padding:7px 9px;background:#E6F1FB;border-radius:var(--border-radius-md);border-left:3px solid #185FA5;"><div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;"><div style="flex:1;height:5px;background:#185FA518;border-radius:3px;overflow:hidden;"><div style="height:100%;width:${val*10}%;background:#185FA5;border-radius:3px;"></div></div><span style="font-size:11px;font-weight:500;color:#0C447C;min-width:110px;">${v.l}</span><span style="font-size:12px;font-weight:500;color:#185FA5;min-width:28px;text-align:right;">${val}/10</span></div><div style="font-size:9px;color:#185FA5;opacity:0.8;">${def.def}</div></div>`;}).join('')}</div>
+    </div>`;
+  }
+  function buildBrechasVsGerente(pa,pb){
+    const fortalezas=getFortalezasGerente(pa);
+    const brechas=fortalezas.filter(v=>(pb[v.k]||0)<(pa[v.k]||0)).sort((a,b)=>((pa[b.k]||0)-(pb[b.k]||0))-((pa[a.k]||0)-(pb[a.k]||0)));
+    const parejas=fortalezas.filter(v=>(pb[v.k]||0)>=(pa[v.k]||0));
+    return`<div style="background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:12px;margin-bottom:10px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:10px;">
+        <div style="background:#FEF0E8;border:0.5px solid #E8631A33;border-radius:var(--border-radius-md);padding:8px;text-align:center;"><div style="font-size:22px;font-weight:500;color:#E8631A;">${brechas.length}</div><div style="font-size:10px;color:#7B3A0A;">Brechas a cerrar</div></div>
+        <div style="background:#EAF3DE;border:0.5px solid #3B6D1133;border-radius:var(--border-radius-md);padding:8px;text-align:center;"><div style="font-size:22px;font-weight:500;color:#3A7D1E;">${parejas.length}</div><div style="font-size:10px;color:#27500A;">Ya está a la altura</div></div>
+      </div>
+      ${brechas.length?`<div style="font-size:10px;font-weight:500;color:#E8631A;margin-bottom:7px;">⚠ Brechas críticas</div>${brechas.map(v=>{const va=pa[v.k]||0,vb=pb[v.k]||0,gap=va-vb;const def=WPI_DEF[v.k]||{def:'',dim:''};return`<div style="margin-bottom:8px;padding:8px 10px;background:#FEF0E8;border-radius:var(--border-radius-md);border-left:3px solid #E8631A;"><div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;"><span style="font-size:11px;font-weight:500;color:#7B3A0A;flex:1;">${v.l}</span><span style="font-size:10px;background:#E8631A;color:#fff;padding:1px 6px;border-radius:8px;">−${gap} pts</span></div><div style="display:flex;align-items:center;gap:4px;margin-bottom:4px;"><span style="font-size:9px;color:#185FA5;width:44px;">Gerente</span><div style="flex:1;height:5px;background:#185FA518;border-radius:3px;overflow:hidden;"><div style="height:100%;width:${va*10}%;background:#185FA5;border-radius:3px;"></div></div><span style="font-size:10px;font-weight:500;color:#185FA5;width:20px;text-align:right;">${va}</span></div><div style="display:flex;align-items:center;gap:4px;margin-bottom:4px;"><span style="font-size:9px;color:#E8631A;width:44px;">Sucesor</span><div style="flex:1;height:5px;background:#E8631A18;border-radius:3px;overflow:hidden;"><div style="height:100%;width:${vb*10}%;background:#E8631A;border-radius:3px;"></div></div><span style="font-size:10px;font-weight:500;color:#E8631A;width:20px;text-align:right;">${vb}</span></div><div style="font-size:9px;color:#7B3A0A;opacity:0.85;line-height:1.4;">${def.def}</div></div>`;}).join('')}`:''}
+      ${parejas.length?`<div style="font-size:10px;font-weight:500;color:#3B6D11;margin-top:10px;margin-bottom:7px;">✓ Ya está a la altura del gerente</div><div style="display:flex;flex-wrap:wrap;gap:5px;">${parejas.map(v=>`<div style="font-size:10px;padding:3px 9px;border-radius:20px;background:#EAF3DE;color:#27500A;border:0.5px solid #3B6D1133;">${v.l} · ${pb[v.k]||0}/10</div>`).join('')}</div>`:''}
+      <div style="margin-top:10px;padding:8px 10px;background:#E6F1FB;border-radius:var(--border-radius-md);border-left:3px solid #185FA5;"><div style="font-size:10px;font-weight:500;color:#0C447C;margin-bottom:3px;">Recomendación para RRHH</div><div style="font-size:10px;color:#185FA5;line-height:1.5;">${brechas.length===0?`${pb.n} iguala o supera todas las cualidades clave del gerente. Está técnicamente listo para la transición.`:`Prioriza en el PDI de ${pb.n} las ${Math.min(brechas.length,3)} brechas más críticas: ${brechas.slice(0,3).map(v=>v.l).join(', ')}.`}</div></div>
+    </div>`;
+  }
+  return`<div>
+    <div style="display:flex;gap:8px;margin-bottom:12px;">${selectorHtml('A',cmpA,'#185FA5','👤 Gerente actual','Líder con trayectoria — sus fortalezas son el estándar')}${selectorHtml('B',cmpB,'#E8631A','⭐ Candidato sucesor','¿Está listo para asumir el rol?')}</div>
+    ${(pA&&pB)?`${buildVeredicto(pB)}${buildCardGerente(pA)}${buildBrechasVsGerente(pA,pB)}`:'<div style="padding:40px;text-align:center;color:var(--color-text-secondary);font-size:12px;">Selecciona el gerente actual y el candidato sucesor para ver el análisis</div>'}
+  </div>`;
+}
+
+function buildSegundos(){
+  const conSegundo=people.filter(p=>p.tiene_segundo&&(p.segundo||p.segundo_n)).length;
+  const sinSegundo=people.filter(p=>!p.tiene_segundo||(!p.segundo&&!p.segundo_n)).length;
+  let listos=0,enDesarrollo=0;
+  people.forEach(p=>{const seg=p.segundo;if(!seg&&!p.segundo_n)return;const esl=seg?seg.es_sucesor:(p.segundo_n?true:false);if(esl)listos++;else enDesarrollo++;});
+  const ZONE_COLORS={'Talento Alto Potencial':{bg:'#B7DDA8',st:'#3A7D1E',tc:'#1A4A0A'},'Colaborador Clave':{bg:'#D6EAC8',st:'#5A9E3A',tc:'#1E4D0F'},'Destacado':{bg:'#D6EAC8',st:'#5A9E3A',tc:'#1E4D0F'},'Especialista':{bg:'#D6EAC8',st:'#5A9E3A',tc:'#1E4D0F'},'En Desarrollo':{bg:'#FDF3D0',st:'#C8A800',tc:'#5C4A00'},'Evaluar Rol':{bg:'#FDF3D0',st:'#C8A800',tc:'#5C4A00'},'Colaborador Efectivo':{bg:'#FAE5C8',st:'#D9823A',tc:'#7B3A0A'},'Plan de Acción':{bg:'#FAE5C8',st:'#D9923A',tc:'#7B3A0A'},'En Riesgo':{bg:'#F5C6CB',st:'#C0392B',tc:'#7B1C1C'},'Sin WPI completo':{bg:'#E6F1FB',st:'#185FA5',tc:'#0C447C'},};
+  const statsHtml=`<div style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:14px;">
+    <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px;text-align:center;"><div style="font-size:20px;font-weight:500;color:var(--color-text-primary);">${people.length}</div><div style="font-size:10px;color:var(--color-text-secondary);">Líderes totales</div></div>
+    <div style="background:#EAF3DE;border-radius:var(--border-radius-md);padding:10px;text-align:center;"><div style="font-size:20px;font-weight:500;color:#3B6D11;">${conSegundo}</div><div style="font-size:10px;color:#27500A;">Con segundo</div></div>
+    <div style="background:#EAF3DE;border-radius:var(--border-radius-md);padding:10px;text-align:center;"><div style="font-size:20px;font-weight:500;color:#3A7D1E;">${listos}</div><div style="font-size:10px;color:#1A4A0A;">Listos para suceder</div></div>
+    <div style="background:#FEF0E8;border-radius:var(--border-radius-md);padding:10px;text-align:center;"><div style="font-size:20px;font-weight:500;color:#E8631A;">${sinSegundo}</div><div style="font-size:10px;color:#7B3A0A;">Sin segundo aún</div></div>
+  </div>`;
+  const cardsHtml=people.map((p,idx)=>{
+    const zp=pz(p);const seg=p.segundo||null;const tieneSegundo=p.tiene_segundo&&(seg||p.segundo_n);
+    const segNombre=seg?seg.n:p.segundo_n||null;const segCargo=seg?seg.cargo:p.segundo_cargo||null;
+    const segZona=seg?seg.zona:null;const esListo=seg?seg.es_sucesor:(p.segundo_n?null:false);
+    const segZC=ZONE_COLORS[segZona]||ZONE_COLORS['En Desarrollo'];const segDfinal=seg?seg.d_final:p.segundo_d?p.segundo_d/10:null;
+    const ini=p.n.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();
+    const segIni=segNombre?segNombre.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase():'?';
+    const pdiBg=zp.st;
+    if(!tieneSegundo){return`<div style="background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:12px;display:flex;gap:10px;align-items:flex-start;"><div style="flex:1;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;"><div style="width:32px;height:32px;border-radius:50%;background:${zp.bg};color:${zp.tc};display:flex;align-items:center;justify-content:center;font-weight:500;font-size:11px;flex-shrink:0;">${ini}</div><div><div style="font-size:12px;font-weight:500;color:var(--color-text-primary);">${p.n}</div><div style="font-size:10px;color:var(--color-text-secondary);">${p.cargo||''}</div></div><div style="margin-left:auto;"><span style="font-size:9px;padding:2px 7px;border-radius:8px;background:${zp.bg};color:${zp.tc};">${zp.l}</span></div></div><div style="display:flex;align-items:center;gap:8px;padding:7px 10px;background:#FEF0E8;border-radius:var(--border-radius-md);"><div style="font-size:18px;">⚠</div><div><div style="font-size:10px;font-weight:600;color:#E8631A;">Sin segundo identificado</div><div style="font-size:9px;color:#7B3A0A;">Cargo ${p.critico?'crítico — ':p.clave?'clave — ':''}requiere plan de sucesión urgente</div></div></div></div><button onclick="selectPerson(${idx});setView('pdi',document.querySelectorAll('.nav-tab')[2]);" style="font-size:10px;padding:5px 10px;border-radius:var(--border-radius-md);border:0.5px solid ${pdiBg};background:${pdiBg};color:#fff;cursor:pointer;white-space:nowrap;flex-shrink:0;">Ver PDI →</button></div>`;}
+    const veredicto=esListo===true?`<div style="display:flex;align-items:center;gap:5px;padding:5px 8px;background:#EAF3DE;border-radius:var(--border-radius-md);"><div style="font-size:14px;">✅</div><div><div style="font-size:10px;font-weight:700;color:#1A4A0A;">Aplica como sucesor</div><div style="font-size:9px;color:#27500A;">Zona: <strong>${segZona||'Desempeño alto'}</strong>${segDfinal?` · D: ${segDfinal.toFixed(1)}/10`:''}</div></div></div>`:esListo===false?`<div style="display:flex;align-items:center;gap:5px;padding:5px 8px;background:#FEF0E8;border-radius:var(--border-radius-md);"><div style="font-size:14px;">⏳</div><div><div style="font-size:10px;font-weight:700;color:#7B2A0A;">No aplica aún — en desarrollo</div><div style="font-size:9px;color:#7B3A0A;">Zona: <strong>${segZona}</strong>${segDfinal?` · D: ${segDfinal.toFixed(1)}/10`:''}</div></div></div>`:`<div style="display:flex;align-items:center;gap:5px;padding:5px 8px;background:#E6F1FB;border-radius:var(--border-radius-md);"><div style="font-size:14px;">📋</div><div><div style="font-size:10px;font-weight:700;color:#0C447C;">Pendiente evaluación WPI</div><div style="font-size:9px;color:#185FA5;">Desempeño: ${segDfinal?`${(segDfinal*10).toFixed(0)}%`:'—'} · Completar WPI para definir aptitud</div></div></div>`;
+    return`<div style="background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:12px;">
+      <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;margin-bottom:8px;">
+        <div style="display:flex;align-items:center;gap:8px;"><div style="width:36px;height:36px;border-radius:50%;background:${zp.bg};color:${zp.tc};display:flex;align-items:center;justify-content:center;font-weight:500;font-size:12px;flex-shrink:0;">${ini}</div><div><div style="font-size:11px;font-weight:600;color:var(--color-text-primary);">${p.n}</div><div style="font-size:9px;color:var(--color-text-secondary);">${p.cargo||''}</div><span style="font-size:9px;padding:1px 6px;border-radius:8px;background:${zp.bg};color:${zp.tc};margin-top:2px;display:inline-block;">${zp.l}</span>${p.critico?'<span style="font-size:9px;padding:1px 6px;border-radius:8px;background:#FBEAF0;color:#72243E;margin-left:3px;">Crítico</span>':''}</div></div>
+        <div style="text-align:center;font-size:18px;color:var(--color-text-secondary);">→</div>
+        <div style="display:flex;align-items:center;gap:8px;"><div style="width:36px;height:36px;border-radius:50%;background:${segZC.bg};color:${segZC.tc};display:flex;align-items:center;justify-content:center;font-weight:500;font-size:12px;flex-shrink:0;">${segIni}</div><div><div style="font-size:11px;font-weight:600;color:var(--color-text-primary);">${segNombre}</div><div style="font-size:9px;color:var(--color-text-secondary);">${segCargo||''}</div>${segZona&&segZona!=='Sin WPI completo'?`<span style="font-size:9px;padding:1px 6px;border-radius:8px;background:${segZC.bg};color:${segZC.tc};margin-top:2px;display:inline-block;">${segZona}</span>`:''}</div></div>
+      </div>
+      <div style="margin-bottom:8px;">${veredicto}</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <button onclick="selectPerson(${idx});setView('pdi',document.querySelectorAll('.nav-tab')[2]);" style="flex:1;font-size:10px;padding:5px 8px;border-radius:var(--border-radius-md);border:0.5px solid ${pdiBg};background:${pdiBg};color:#fff;cursor:pointer;">PDI del titular →</button>
+        ${esListo===false&&seg&&seg.wpi_completo?`<button onclick="setCmp('A',${idx});setCmp('B',-99);setView('comparar',document.querySelectorAll('.nav-tab')[3]);" style="flex:1;font-size:10px;padding:5px 8px;border-radius:var(--border-radius-md);border:0.5px solid #185FA5;background:#E6F1FB;color:#0C447C;cursor:pointer;">⇄ Ver brechas del segundo</button>`:''}
+      </div>
+    </div>`;
+  }).join('');
+  return`<div>${statsHtml}<div style="font-size:11px;font-weight:500;color:var(--color-text-primary);margin-bottom:8px;">${activeCompany==='regional'?'Regional Centro — todos los cargos con su segundo identificado':'Líderes con segundo — plan de sucesión'}<span style="font-size:10px;font-weight:400;color:var(--color-text-secondary);margin-left:6px;">· Haz clic en "PDI del titular" para ver el plan de desarrollo</span></div><div style="display:grid;gap:8px;">${cardsHtml}</div></div>`;
+}
+
+function setCmp(role,idx){
+  if(idx===-1){if(role==='A')cmpA=null;else cmpB=null;}
+  else{if(role==='A')cmpA=idx;else cmpB=idx;}
+  if(currentView==='comparar')document.getElementById('chart-content').innerHTML=buildComparar();
+}
+
+// ── LISTA DE PERSONAS + PENDIENTES ──────────────────────────────────────────
+function buildList(){
+  const vis=new Set(getVisible());
+  const sorted=[...people].map((p,i)=>({p,i})).sort((a,b)=>{
+    const order=["Talento Alto Potencial","Colaborador Clave","Destacado","Especialista","Evaluar Rol","En Desarrollo","Colaborador Efectivo","Plan de Acción","En Riesgo"];
+    return order.indexOf(pz(a.p).l)-order.indexOf(pz(b.p).l);
+  });
+  document.getElementById('people-list').innerHTML=sorted.map(({p,i})=>{
+    const z=pz(p);const faded=!vis.has(i);
+    return`<div class="person-row${selectedIdx===i?' selected':''}" onclick="selectPerson(${i})" style="opacity:${faded?0.3:1}">
+      <div class="person-dot" style="background:${z.st};"></div>
+      <div style="flex:1;min-width:0;">
+        <span class="person-name">${p.n}</span>
+        ${p.cargo?`<div style="font-size:9px;color:var(--color-text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.cargo}</div>`:''}
+      </div>
+      <span class="person-score" style="color:${z.st};">${p.d.toFixed(1)}/${typeof pv(p)==='number'&&pv(p)%1!==0?pv(p).toFixed(1):pv(p)}</span>
+    </div>`;
+  }).join('');
+}
+
+function getVisible(){
+  if(activeFilter==='todos') return people.map((_,i)=>i);
+  return people.map((p,i)=>pz(p).l===activeFilter?i:-1).filter(i=>i>=0);
+}
+
+function selectPerson(i){
+  selectedIdx=i;saveState();
+  buildList();showProfile(i);
+  if(currentView==='ninebox') drawChart();
+  else if(currentView==='wpi') document.getElementById('chart-content').innerHTML=buildWPIFull(i);
+  else if(currentView==='pdi') document.getElementById('chart-content').innerHTML=buildPDI(i);
+}
+
+function showProfile(i){
+  const p=people[i];const z=pz(p);
+  const ins={"Talento Alto Potencial":{bg:"#B7DDA8",tc:"#1A4A0A",t:"Candidato prioritario para plan de sucesión. Retención crítica."},"Colaborador Clave":{bg:"#D6EAC8",tc:"#1E4D0F",t:"PDI focalizado + movilidad interna + mayor complejidad."},"Destacado":{bg:"#D6EAC8",tc:"#1E4D0F",t:"Liderazgo técnico + especialización + mentoring a otros."},"Especialista":{bg:"#D6EAC8",tc:"#1E4D0F",t:"Consolidar expertise + referente técnico + retención."},"En Desarrollo":{bg:"#FDF3D0",tc:"#5C4A00",t:"Mentoring activo + metas claras + revisión trimestral."},"Evaluar Rol":{bg:"#FDF3D0",tc:"#5C4A00",t:"Diagnóstico de desalineación + reubicación estratégica."},"Colaborador Efectivo":{bg:"#FAE5C8",tc:"#7B3A0A",t:"Estabilización + reconocimiento + claridad de expectativas."},"Plan de Acción":{bg:"#FAE5C8",tc:"#7B3A0A",t:"Plan de mejora 60 días + revisión de motivación y rol."},"En Riesgo":{bg:"#F5C6CB",tc:"#7B1C1C",t:"Intervención urgente: diagnóstico + plan 90 días."},};
+  const ins2=ins[z.l]||ins["En Riesgo"];
+  const changed=p.zs.l!==p.zc.l;
+  const seg=p.segundo||null;
+  const segZoneColors={'Talento Alto Potencial':{bg:'#B7DDA8',st:'#3A7D1E',tc:'#1A4A0A'},'Colaborador Clave':{bg:'#D6EAC8',st:'#5A9E3A',tc:'#1E4D0F'},'Destacado':{bg:'#D6EAC8',st:'#5A9E3A',tc:'#1E4D0F'},'Especialista':{bg:'#D6EAC8',st:'#5A9E3A',tc:'#1E4D0F'},'En Desarrollo':{bg:'#FDF3D0',st:'#C8A800',tc:'#5C4A00'},'Sin WPI completo':{bg:'#E6F1FB',st:'#185FA5',tc:'#0C447C'},'Sin WPI':{bg:'#E6F1FB',st:'#185FA5',tc:'#0C447C'},};
+  const segundoBadge=p.tiene_segundo&&seg?`
+    <div id="seg-card-${i}" style="background:#E6F1FB;border:0.5px solid #185FA544;border-radius:var(--border-radius-md);margin-top:6px;overflow:hidden;">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:7px 10px;cursor:pointer;" onclick="document.getElementById('seg-body-${i}').style.display=document.getElementById('seg-body-${i}').style.display==='none'?'block':'none'">
+        <div><div style="font-size:9px;font-weight:700;color:#185FA5;margin-bottom:1px;">✓ TIENE SEGUNDO IDENTIFICADO</div><div style="font-size:11px;font-weight:500;color:#0C447C;">${seg.n}</div></div>
+        <div style="text-align:right;">${seg.es_sucesor?'<div style="font-size:9px;font-weight:700;background:#3A7D1E;color:#fff;padding:2px 8px;border-radius:10px;">✓ Listo para suceder</div>':'<div style="font-size:9px;font-weight:700;background:#E8631A;color:#fff;padding:2px 8px;border-radius:10px;">⏳ En desarrollo</div>'}<div style="font-size:9px;color:#185FA5;margin-top:2px;">▼ ver detalle</div></div>
+      </div>
+      <div id="seg-body-${i}" style="display:none;padding:0 10px 10px;border-top:0.5px solid #185FA522;">
+        <div style="font-size:10px;color:#185FA5;margin-bottom:6px;margin-top:6px;">${seg.cargo}</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:6px;">
+          <div style="background:#fff;border-radius:var(--border-radius-md);padding:5px 7px;"><div style="font-size:9px;color:#888780;">Desempeño</div><div style="font-size:13px;font-weight:500;color:#185FA5;">${seg.d_final?seg.d_final.toFixed(1):'—'}/10</div></div>
+          <div style="background:#fff;border-radius:var(--border-radius-md);padding:5px 7px;"><div style="font-size:9px;color:#888780;">Zona WPI</div><div style="font-size:10px;font-weight:600;color:${(segZoneColors[seg.zona]||segZoneColors['En Desarrollo']).st};">${seg.zona||'—'}</div></div>
+        </div>
+        ${seg.d_pct?`<div style="font-size:9px;color:#185FA5;margin-bottom:4px;">Desempeño evaluado: ${seg.d_pct}%</div>`:''}
+        ${seg.wpi_completo&&seg.cum!==undefined?`<div style="font-size:9px;font-weight:600;color:#0C447C;margin-bottom:4px;">Variables clave del segundo:</div>${[['Cumpl. Compromisos',seg.cum||0],['Persistencia',seg.per2||0],['Liderazgo',seg.lid||0],['Tolerancia Estrés',seg.tol||0]].map(([l,v])=>`<div style="display:flex;align-items:center;gap:5px;margin-bottom:3px;"><div style="flex:1;height:4px;background:#185FA518;border-radius:2px;overflow:hidden;"><div style="height:100%;width:${v*10}%;background:#185FA5;border-radius:2px;"></div></div><span style="font-size:9px;color:#0C447C;width:110px;">${l}</span><span style="font-size:10px;font-weight:600;color:#185FA5;">${v}/10</span></div>`).join('')}<button onclick="setCmp(0,${i});setView('comparar',document.querySelectorAll('.nav-tab')[3]);" style="width:100%;margin-top:6px;font-size:10px;padding:5px;border-radius:var(--border-radius-md);border:0.5px solid #185FA5;background:#185FA5;color:#fff;cursor:pointer;">⇄ Comparar titular vs. segundo</button>`:''}
+        ${seg.email?`<div style="font-size:9px;color:#888780;margin-top:4px;">${seg.email} · ${seg.tel||''}</div>`:''}
+      </div>
+    </div>`:`<div style="background:#FEF0E8;border:0.5px solid #E8631A33;border-radius:var(--border-radius-md);padding:6px 10px;margin-top:6px;font-size:10px;color:#7B3A0A;">⚠ Sin segundo identificado aún</div>`;
+  const segundoBadge_compat=(p.tiene_segundo&&p.segundo_n&&!seg)?'<div style="background:#E6F1FB;border:0.5px solid #185FA533;border-radius:var(--border-radius-md);padding:7px 10px;margin-top:6px;"><div style="font-size:9px;font-weight:600;color:#185FA5;">✓ SEGUNDO: '+p.segundo_n+'</div><div style="font-size:10px;color:#185FA5;">'+(p.segundo_cargo||'')+' · D: '+(p.segundo_d||0)+'%</div></div>':null;
+  const regionalBadges=(()=>{let rb='';if(p.clave||p.critico||p.resultado){rb+='<div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:4px;">';if(p.clave)rb+='<span style="font-size:9px;padding:2px 7px;border-radius:8px;background:#E6F1FB;color:#0C447C;font-weight:600;">Cargo clave</span>';if(p.critico)rb+='<span style="font-size:9px;padding:2px 7px;border-radius:8px;background:#FBEAF0;color:#72243E;font-weight:600;">Cargo crítico</span>';if(p.resultado)rb+='<span style="font-size:9px;padding:2px 7px;border-radius:8px;background:#EAF3DE;color:#27500A;font-weight:600;">'+p.resultado+'</span>';rb+='</div>';}if(p.d_pct_val!==null&&p.d_pct_val>0)rb+='<div style="font-size:9px;color:var(--color-text-secondary);margin-top:3px;">D WPI: '+p.d_wpi.toFixed(1)+' · D Eval: '+p.d_pct_val.toFixed(1)+' → Promedio: '+p.d.toFixed(1)+'</div>';rb+=seg?segundoBadge:(segundoBadge_compat||'');return rb;})();
+  document.getElementById('profile-card').innerHTML=`
+    <div class="profile-hdr"><div class="avatar" style="background:${z.bg};color:${z.tc};">${initials(p.n)}</div><div><div class="profile-name">${p.n}</div>${p.cargo?`<div style="font-size:10px;color:var(--color-text-secondary);margin-top:1px;">${p.cargo}</div>`:''}<div class="zone-badge" style="background:${z.st};color:#fff;margin-top:3px;">${z.l}</div></div></div>
+    <div class="scores-2"><div class="score-item"><div class="score-lbl">Desempeño</div><div class="score-val" style="color:${z.st};">${p.d.toFixed(1)}</div></div><div class="score-item"><div class="score-lbl">${mode==='simple'?'Pot. WPI':'Índice'}</div><div class="score-val" style="color:${z.st};">${typeof pv(p)==='number'&&pv(p)%1!==0?pv(p).toFixed(1):pv(p)}</div></div></div>
+    <div class="divider"></div>
+    <div style="font-size:10px;font-weight:500;color:var(--color-text-secondary);margin-bottom:5px;">4 variables críticas</div>
+    ${[["Cumpl. Compromisos",p.cum],["Persistencia",p.per],["Tol. Estrés",p.tol],["Liderazgo",p.lid]].map(([l,v])=>`<div class="bar-row"><div class="bar-lbl"><span>${l}</span><span style="color:${z.st};font-weight:500;">${v}</span></div><div class="bar-track"><div class="bar-fill" style="width:${v*10}%;background:${z.st};"></div></div></div>`).join('')}
+    <div class="divider"></div>
+    <div style="font-size:10px;font-weight:500;color:var(--color-text-secondary);margin-bottom:4px;">Componentes potencial</div>
+    <div class="comp-4"><div class="comp-item"><div class="comp-lbl">Motor (30%)</div><div class="comp-val">${p.motor}</div></div><div class="comp-item"><div class="comp-lbl">Influencia (30%)</div><div class="comp-val">${p.inf}</div></div><div class="comp-item"><div class="comp-lbl">Agilidad (25%)</div><div class="comp-val">${p.ag}</div></div><div class="comp-item"><div class="comp-lbl">Estabilidad (15%)</div><div class="comp-val">${p.est}</div></div></div>
+    ${changed?`<div style="font-size:10px;margin-top:6px;padding:4px 7px;border-radius:var(--border-radius-md);background:#E6F1FB;color:#0C447C;">Cambia: <b>${p.zs.l}</b> → <b>${p.zc.l}</b></div>`:''}
+    ${regionalBadges}
+    <div class="insight" style="background:${ins2.bg};color:${ins2.tc};">${ins2.t}</div>
+    <div style="display:flex;gap:5px;margin-top:8px;">
+      <button style="flex:1;font-size:10px;padding:5px;border-radius:var(--border-radius-md);border:0.5px solid ${z.st};background:${z.bg};color:${z.tc};cursor:pointer;" onclick="showWPI(${i})">Ver WPI completo</button>
+      <button style="flex:1;font-size:10px;padding:5px;border-radius:var(--border-radius-md);border:0.5px solid ${z.st};background:${z.st};color:#fff;cursor:pointer;" onclick="showPDI(${i})">Ver plan desarrollo</button>
+    </div>`;
+}
+
+function showWPI(i){selectedIdx=i;document.querySelectorAll('.nav-tab').forEach((b,idx)=>{b.classList.toggle('active',idx===1);});currentView='wpi';document.getElementById('chart-title').textContent='Perfil WPI Completo';document.getElementById('filter-pills').style.display='none';document.getElementById('chart-content').innerHTML=buildWPIFull(i);}
+function showPDI(i){selectedIdx=i;document.querySelectorAll('.nav-tab').forEach((b,idx)=>{b.classList.toggle('active',idx===2);});currentView='pdi';document.getElementById('chart-title').textContent='Plan de Desarrollo Individual';document.getElementById('filter-pills').style.display='none';document.getElementById('chart-content').innerHTML=buildPDI(i);}
+
+function setMode(m,btn){mode=m==='simple'?'simple':'comp';saveState();document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');buildKPIs();buildList();if(currentView==='ninebox')drawChart();if(selectedIdx!==null)showProfile(selectedIdx);}
+function setFilter(f,btn){activeFilter=f;saveState();document.querySelectorAll('.pill').forEach(p=>p.classList.remove('active'));btn.classList.add('active');buildList();if(currentView==='ninebox')drawChart();}
+
+function drawChart(){
+  const canvas=document.getElementById('nb');if(!canvas)return;
+  const size=Math.min(canvas.parentElement.offsetWidth,560);
+  canvas.width=size;canvas.height=size;
+  const m={top:26,right:16,bottom:44,left:44};
+  const W=size-m.left-m.right,H=size-m.top-m.bottom;
+  const ctx=canvas.getContext('2d');ctx.clearRect(0,0,size,size);
+  const tx=v=>m.left+((v-1)/9)*W;const ty=v=>m.top+H-((v-1)/9)*H;
+  const xB=[1,T1,T2,10],yB=[1,T1,T2,10];
+  const GRID_NAMES=[["En Riesgo","Colab. Efectivo","Especialista"],["Plan de Acción","En Desarrollo","Destacado"],["Evaluar Rol","Colab. Clave","Talento\nAlto Potencial"]];
+  for(let col=0;col<3;col++)for(let row=0;row<3;row++){
+    const z=ZONES[`${col}${row}`];const x1=tx(xB[col]),x2=tx(xB[col+1]),y1=ty(yB[row+1]),y2=ty(yB[row]);const r=4;
+    ctx.beginPath();ctx.moveTo(x1+r,y1);ctx.lineTo(x2-r,y1);ctx.quadraticCurveTo(x2,y1,x2,y1+r);ctx.lineTo(x2,y2-r);ctx.quadraticCurveTo(x2,y2,x2-r,y2);ctx.lineTo(x1+r,y2);ctx.quadraticCurveTo(x1,y2,x1,y2-r);ctx.lineTo(x1,y1+r);ctx.quadraticCurveTo(x1,y1,x1+r,y1);ctx.closePath();
+    ctx.fillStyle=z.bg;ctx.fill();ctx.strokeStyle=z.st;ctx.lineWidth=1;ctx.stroke();
+    const label=GRID_NAMES[row][col];ctx.fillStyle=z.tc;ctx.textAlign='center';ctx.font='500 9px sans-serif';
+    if(col===2&&row===2){ctx.font='bold 10px sans-serif';ctx.fillText('Talento',(x1+x2)/2,(y1+y2)/2-4);ctx.font='500 8px sans-serif';ctx.fillText('Alto Potencial',(x1+x2)/2,(y1+y2)/2+8);}
+    else{const w=label.split('\n');w.forEach((ln,li)=>ctx.fillText(ln,(x1+x2)/2,(y1+y2)/2+(li-w.length/2+0.5)*12));}
+  }
+  ctx.strokeStyle='rgba(180,178,169,0.28)';ctx.lineWidth=0.4;
+  for(let i=1;i<=10;i++){ctx.beginPath();ctx.moveTo(tx(i),m.top);ctx.lineTo(tx(i),m.top+H);ctx.stroke();ctx.beginPath();ctx.moveTo(m.left,ty(i));ctx.lineTo(m.left+W,ty(i));ctx.stroke();}
+  ctx.fillStyle='#888780';ctx.font='10px sans-serif';
+  for(let i=1;i<=10;i++){ctx.textAlign='center';ctx.fillText(i,tx(i),m.top+H+13);ctx.textAlign='right';ctx.fillText(i,m.left-4,ty(i)+4);}
+  ctx.save();ctx.translate(12,m.top+H/2);ctx.rotate(-Math.PI/2);ctx.textAlign='center';ctx.fillStyle='#5F5E5A';ctx.font='500 10px sans-serif';ctx.fillText(mode==='simple'?'Potencial Liderazgo (WPI)':'Índice Potencial Compuesto',0,0);ctx.restore();
+  ctx.textAlign='center';ctx.fillStyle='#5F5E5A';ctx.font='500 10px sans-serif';ctx.fillText('Desempeño — 4 variables críticas Italcol',m.left+W/2,size-5);
+  const vis=new Set(getVisible());
+  people.forEach((p,i)=>{
+    const faded=!vis.has(i);const z=pz(p);const isSel=(selectedIdx===i);const x=tx(p.d),y=ty(pv(p));
+    if(faded){ctx.beginPath();ctx.arc(x,y,5,0,Math.PI*2);ctx.fillStyle='rgba(180,178,169,0.2)';ctx.fill();return;}
+    if(isSel){ctx.beginPath();ctx.arc(x,y,12,0,Math.PI*2);ctx.fillStyle=z.st+'22';ctx.fill();}
+    ctx.beginPath();ctx.arc(x,y,isSel?8:7,0,Math.PI*2);ctx.fillStyle=z.st;ctx.fill();
+    ctx.strokeStyle='#fff';ctx.lineWidth=isSel?2:1.5;ctx.stroke();
+    ctx.fillStyle='#2C2C2A';ctx.font=(isSel?'500 ':'')+'9px sans-serif';ctx.textAlign='center';ctx.fillText(shortName(p.n),x,y<m.top+20?y+20:y-11);
+  });
+  canvas.onmousemove=function(e){
+    const rect=canvas.getBoundingClientRect();const mx=(e.clientX-rect.left)*(canvas.width/rect.width);const my=(e.clientY-rect.top)*(canvas.height/rect.height);
+    let found=null;people.forEach((p,i)=>{if(vis.has(i)&&Math.hypot(mx-tx(p.d),my-ty(pv(p)))<14)found=i;});
+    const tip=document.getElementById('tip');
+    if(found!==null){const p=people[found];const z=pz(p);canvas.style.cursor='pointer';tip.style.display='block';const cx=e.clientX-canvas.getBoundingClientRect().left;tip.style.left=(cx>size*0.6?cx-165:cx+12)+'px';tip.style.top=(e.clientY-canvas.getBoundingClientRect().top-8)+'px';tip.innerHTML=`<b style="color:var(--color-text-primary);">${p.n}</b><br><span style="color:${z.st};font-weight:500;">${z.l}</span><br>D: <b>${p.d.toFixed(1)}</b> P: <b>${typeof pv(p)==='number'&&pv(p)%1!==0?pv(p).toFixed(1):pv(p)}</b><br><span style="color:var(--color-text-secondary);font-size:10px;">Clic para ver perfil</span>`;}
+    else{canvas.style.cursor='default';tip.style.display='none';}
+  };
+  canvas.onclick=function(e){
+    const rect=canvas.getBoundingClientRect();const mx=(e.clientX-rect.left)*(canvas.width/rect.width);const my=(e.clientY-rect.top)*(canvas.height/rect.height);
+    let found=null;people.forEach((p,i)=>{if(vis.has(i)&&Math.hypot(mx-tx(p.d),my-ty(pv(p)))<14)found=i;});
+    if(found!==null)selectPerson(found);
+  };
+  canvas.onmouseleave=()=>{const t=document.getElementById('tip');if(t)t.style.display='none';};
+}
+
+// ── PANEL PENDIENTES — REDISEÑADO ─────────────────────────────────────────────
+function buildPendingSection(){
+  const panel=document.getElementById('pending-panel');
+  if(!panel)return;
+  if(!PENDING||PENDING.length===0){panel.style.display='none';return;}
+  panel.style.display='block';
+
+  const total=people.length+PENDING.length; // total incluyendo pendientes
+  const evaluados=people.length;
+  const pct=Math.round(evaluados/total*100);
+
+  // Determinar urgencia según empresa
+  const urgencia=activeCompany==='italcol'?'Alta':activeCompany==='italfoods'?'Media':'Normal';
+  const urgColor=urgencia==='Alta'?'#C0392B':urgencia==='Media'?'#E8631A':'#C8A800';
+
+  panel.innerHTML=`
+    <!-- HEADER -->
+    <div class="pending-panel-header">
+      <div class="pending-panel-title">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" style="flex-shrink:0;">
+          <circle cx="6" cy="6" r="5.5" stroke="#E8631A" stroke-width="1"/>
+          <path d="M6 3.5V6.5L7.5 8" stroke="#E8631A" stroke-width="1.2" stroke-linecap="round"/>
+        </svg>
+        Pendientes WPI
+      </div>
+      <span class="pending-panel-count">${PENDING.length}</span>
+    </div>
+
+    <!-- BARRA DE PROGRESO -->
+    <div style="font-size:9px;color:var(--pending-text);margin-bottom:4px;display:flex;justify-content:space-between;">
+      <span>Cobertura WPI</span>
+      <span style="font-weight:600;">${evaluados}/${total} · ${pct}%</span>
+    </div>
+    <div class="pending-progress-bar">
+      <div class="pending-progress-fill" style="width:${pct}%;"></div>
+    </div>
+
+    <!-- BADGE URGENCIA -->
+    <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
+      <div style="font-size:9px;padding:2px 8px;border-radius:10px;background:${urgColor}18;border:0.5px solid ${urgColor}44;color:${urgColor};font-weight:600;">
+        Prioridad ${urgencia}
+      </div>
+      <div style="font-size:9px;color:var(--pending-text);opacity:0.7;">Sin Nine Box hasta completar</div>
+    </div>
+
+    <!-- LISTA DE PENDIENTES -->
+    <div style="display:grid;gap:4px;">
+      ${PENDING.map((nombre,idx)=>`
+        <div class="pending-card pending-shimmer">
+          <div class="pending-card-num">${idx+1}</div>
+          <div class="pending-card-name">${nombre}</div>
+          <span class="pending-card-tag">Sin WPI</span>
+        </div>
+      `).join('')}
+    </div>
+
+    <!-- CTA -->
+    <div style="margin-top:10px;padding:7px 9px;background:rgba(232,99,26,0.08);border-radius:var(--border-radius-md);border:0.5px dashed var(--pending-border);">
+      <div style="font-size:9px;color:var(--pending-text);line-height:1.5;font-weight:500;">
+        ⚡ Cómo agregar: carga un Excel con columna "Nombre" + 22 variables WPI usando el botón 📂 Datos del encabezado.
+      </div>
+    </div>`;
+}
+
+// ── BANNER PENDIENTES EN NINE BOX (se inyecta después del canvas) ─────────────
+function injectPendingBannerNineBox(){
+  if(!PENDING||PENDING.length===0)return;
+  const existing=document.getElementById('nb-pending-banner');
+  if(existing)return;
+  const scatter=document.querySelector('.scatter-wrap');
+  if(!scatter)return;
+  const banner=document.createElement('div');
+  banner.id='nb-pending-banner';
+  banner.className='nb-pending-banner';
+  banner.innerHTML=`
+    <div class="nb-pending-dots">
+      <div class="nb-pending-dot"></div>
+      <div class="nb-pending-dot"></div>
+      <div class="nb-pending-dot"></div>
+      <div style="font-size:9px;color:var(--pending-text);font-weight:500;margin-left:4px;">+${PENDING.length} sin graficar</div>
+    </div>
+    <div style="flex:1;font-size:10px;color:var(--pending-text);">
+      <strong>${PENDING.length} líderes pendientes de WPI</strong> no aparecen en este Nine Box — su posición real aún no puede calcularse.
+    </div>
+    <div style="font-size:9px;color:var(--pending-text);opacity:0.6;white-space:nowrap;">⏳ Datos incompletos</div>`;
+  scatter.appendChild(banner);
+}
+
+window.addEventListener('load',()=>{
+  document.querySelectorAll('.company-btn').forEach(b=>{b.classList.toggle('active',b.dataset.company===activeCompany);});
+  document.querySelectorAll('.mode-btn').forEach(b=>{b.classList.toggle('active',b.textContent.includes(mode==='simple'?'WPI':'comp'));});
+  document.querySelectorAll('.pill').forEach(b=>{b.classList.toggle('active',b.textContent.trim()===activeFilter||(activeFilter==='todos'&&b.textContent.trim()==='Todos'));});
+  buildKPIs();buildList();buildPendingSection();
+  if(currentView==='ninebox'){drawChart();setTimeout(injectPendingBannerNineBox,100);}
+  else if(currentView==='wpi'){setView('wpi',document.querySelectorAll('.nav-tab')[1]);}
+  else if(currentView==='pdi'){setView('pdi',document.querySelectorAll('.nav-tab')[2]);}
+  else{drawChart();setTimeout(injectPendingBannerNineBox,100);}
+  if(selectedIdx!==null&&selectedIdx<people.length)showProfile(selectedIdx);
+});
+
+// Inyectar banner también al cambiar a nine box view
+const _origSetView=setView;
+window.setView=function(v,btn){
+  _origSetView(v,btn);
+  if(v==='ninebox')setTimeout(injectPendingBannerNineBox,150);
+};
+
+function importXLSX(e){
+  const file=e.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=function(ev){
+    try{
+      const wb=XLSX.read(ev.target.result,{type:'array'});const ws=wb.Sheets[wb.SheetNames[0]];const rows=XLSX.utils.sheet_to_json(ws,{header:1});
+      let headerIdx=rows.findIndex(r=>r.some&&r.some(c=>String(c||'').trim()==='Nombre'));
+      if(headerIdx<0){alert('No se encontró la fila de encabezados con "Nombre".');return;}
+      const newRaw=[];const newPending=[];
+      for(let i=headerIdx+1;i<rows.length;i++){
+        const r=rows[i];if(!r||!r[0])continue;const name=String(r[0]).trim();const vals=r.slice(1,23);
+        if(vals.every(v=>v===null||v===undefined||v==='')){newPending.push(name);continue;}
+        const obj={n:name};['amb','ene','ini','lid','pot','per','con','fle','mul','ana','inn','det','cum','pla','reg','per2','pre','dem','ext','equ','aut','tol'].forEach((k,j)=>{obj[k]=+vals[j]||0;});newRaw.push(obj);
+      }
+      if(newRaw.length===0){alert('No se encontraron personas con datos completos.');return;}
+      RAW.length=0;newRaw.forEach(r=>RAW.push(r));PENDING.length=0;newPending.forEach(p=>PENDING.push(p));
+      people.length=0;
+      RAW.forEach(r=>{
+        const d=parseFloat(((r.cum+r.per2+r.tol+r.lid)/4).toFixed(2));const ps=r.pot;const motor=(r.amb+r.ene+r.ini)/3;const inf=(r.lid+r.per+r.con)/3;const ag=(r.fle+r.ana+r.inn)/3;const est=(r.aut+r.tol)/2;const pc=parseFloat((motor*0.30+inf*0.30+ag*0.25+est*0.15).toFixed(2));
+        people.push({n:r.n,d,ps,pc,motor:+motor.toFixed(1),inf:+inf.toFixed(1),ag:+ag.toFixed(1),est:+est.toFixed(1),cum:r.cum,per:r.per2,tol:r.tol,lid:r.lid,amb:r.amb,ene:r.ene,ini:r.ini,pot:r.pot,per_s:r.per,con:r.con,fle:r.fle,mul:r.mul,ana:r.ana,inn:r.inn,det:r.det,pla:r.pla,reg:r.reg,per2:r.per2,pre:r.pre,dem:r.dem,ext:r.ext,equ:r.equ,aut:r.aut,zs:getZone(d,ps),zc:getZone(d,pc)});
+      });
+      applyEvaluaciones();
+      selectedIdx=null;buildKPIs();buildList();buildPendingSection();
+      if(currentView==='ninebox'){drawChart();setTimeout(injectPendingBannerNineBox,100);}
+      alert(`✅ Datos cargados: ${people.length} personas con WPI, ${PENDING.length} pendientes.`);
+    }catch(err){alert('Error al leer el archivo: '+err.message);}
+  };
+  reader.readAsArrayBuffer(file);e.target.value='';
+}
+window.addEventListener('resize',drawChart);
+</script>
+</body>
+</html>
