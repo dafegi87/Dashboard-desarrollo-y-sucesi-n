@@ -1,0 +1,1607 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>PDI — Plan de Desarrollo Individual · Italcol Group</title>
+<style>
+:root{
+  --navy:#1B2A6B; --navy2:#2A3F9B; --nl:#E8ECFB;
+  --orange:#E8631A; --ol:#FEF0E6;
+  --green:#2D7D32; --gl:#EAF3DE;
+  --gold:#C8A800; --goldl:#FFFBE6;
+  --bd:#E0E4F0; --bg:#F4F6FB;
+  --text:#1A1A2E; --muted:#6B7280; --white:#fff;
+  --r:10px; --rs:6px;
+}
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',system-ui,sans-serif}
+body{background:var(--bg);color:var(--text);font-size:14px;line-height:1.5}
+
+/* TOPBAR */
+.topbar{background:var(--navy);height:52px;padding:0 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.tb-l{display:flex;align-items:center;gap:12px}
+.back{color:rgba(255,255,255,.6);text-decoration:none;font-size:12px;display:flex;align-items:center;gap:5px}
+.tb-title{color:#fff;font-size:14px;font-weight:600}
+.tb-r{display:flex;gap:8px}
+.btn-exp{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.25);border-radius:var(--rs);padding:6px 14px;font-size:12px;cursor:pointer}
+.btn-save{background:var(--orange);color:#fff;border:none;border-radius:var(--rs);padding:6px 16px;font-size:12px;font-weight:600;cursor:pointer}
+
+/* HERO HEADER */
+.hero{background:linear-gradient(135deg,var(--navy) 0%,var(--navy2) 100%);padding:24px 24px 0}
+.hero-top{display:flex;gap:16px;align-items:flex-start;margin-bottom:20px}
+.avatar-wrap{position:relative;flex-shrink:0}
+.avatar{width:60px;height:60px;border-radius:50%;background:var(--orange);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:#fff;border:3px solid rgba(255,255,255,.2)}
+.zona-dot{position:absolute;bottom:2px;right:2px;width:16px;height:16px;border-radius:50%;border:2px solid var(--navy2)}
+.hero-info{flex:1}
+.hero-name{color:#fff;font-size:20px;font-weight:700;margin-bottom:1px}
+.hero-sub{color:rgba(255,255,255,.6);font-size:12px;margin-bottom:10px}
+.hero-tags{display:flex;flex-wrap:wrap;gap:6px}
+.htag{font-size:10px;padding:2px 10px;border-radius:40px;font-weight:600}
+.htag-ruta{background:var(--orange);color:#fff}
+.htag-zona{background:rgba(255,255,255,.15);color:#fff}
+.htag-suc{background:#EAF3DE;color:#1B5E20}
+.hero-right{flex-shrink:0;text-align:right}
+.vigencia{background:rgba(255,255,255,.1);color:rgba(255,255,255,.8);border-radius:var(--rs);padding:4px 12px;font-size:11px;margin-bottom:8px;display:inline-block}
+
+/* STATUS BAR */
+.status-bar{display:flex;gap:0;margin-top:16px}
+.status-item{flex:1;text-align:center;padding:14px 8px;cursor:pointer;border-bottom:3px solid transparent;transition:all .2s}
+.status-item:hover{background:rgba(255,255,255,.05)}
+.status-item.active{border-bottom-color:var(--orange);background:rgba(255,255,255,.06)}
+.status-num{font-size:20px;font-weight:700;color:#fff}
+.status-lbl{font-size:10px;color:rgba(255,255,255,.5);margin-top:1px}
+
+/* PROGRESO HERO */
+.progress-hero{background:rgba(255,255,255,.08);border-radius:var(--r) var(--r) 0 0;padding:14px 20px;display:flex;align-items:center;gap:14px}
+.prog-ring-wrap{flex-shrink:0}
+.prog-text{flex:1}
+.prog-title{color:#fff;font-size:13px;font-weight:600;margin-bottom:2px}
+.prog-sub{color:rgba(255,255,255,.55);font-size:11px}
+.prog-status{font-size:11px;font-weight:600;padding:3px 10px;border-radius:40px}
+
+/* MAIN BODY */
+.body{max-width:900px;margin:0 auto;padding:20px 16px 80px}
+
+/* TABS */
+.tabs-wrap{background:var(--white);border-radius:var(--r);border:1px solid var(--bd);overflow:hidden;margin-bottom:0}
+.tabs{display:flex;overflow-x:auto;border-bottom:1px solid var(--bd);background:#FAFBFF}
+.tab{padding:11px 18px;font-size:12px;font-weight:500;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;white-space:nowrap;background:none;border-top:none;border-left:none;border-right:none;transition:all .15s;font-family:inherit;display:flex;align-items:center;gap:5px}
+.tab.active{color:var(--navy);border-bottom-color:var(--orange);font-weight:700;background:var(--white)}
+.tab-dot{width:6px;height:6px;border-radius:50%;background:currentColor;opacity:0.5}
+.tab-dot.done{background:var(--green);opacity:1}
+.tab-content{display:none;padding:22px}
+.tab-content.visible{display:block}
+
+/* SECCIÓN TITLE */
+.sec{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.sec::after{content:'';flex:1;height:1px;background:var(--bd)}
+
+/* CARDS BÁSICAS */
+.card{background:var(--white);border:1px solid var(--bd);border-radius:var(--r);padding:14px 16px;margin-bottom:12px}
+.card-accent{border-left:4px solid var(--navy)}
+
+/* META GRID */
+.mgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-bottom:16px}
+.fbox{background:var(--bg);border:1px solid var(--bd);border-radius:var(--rs);padding:9px 12px}
+.fbox label{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:3px}
+.fbox input,.fbox select{width:100%;background:transparent;border:none;font-size:13px;color:var(--text);outline:none;font-family:inherit}
+.fbox input[readonly]{color:var(--navy);font-weight:600}
+.finput{width:100%;border:1px solid var(--bd);border-radius:var(--rs);padding:9px;font-size:13px;color:var(--text);font-family:inherit;resize:vertical;background:var(--white);outline:none;transition:border .15s}
+.finput:focus{border-color:var(--navy)}
+
+/* FORTALEZAS / SUPERPODERES */
+.competencias-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-bottom:16px}
+.comp-card{background:var(--white);border:1.5px solid var(--bd);border-radius:var(--r);padding:12px 14px;cursor:pointer;transition:all .2s;position:relative}
+.comp-card:hover{border-color:var(--navy);transform:translateY(-1px)}
+.comp-card.selected{border-color:var(--orange);background:#FFF8F5}
+.comp-card.high{border-color:#3A7D1E;background:#F0FAE8}
+.comp-icon{font-size:20px;margin-bottom:6px}
+.comp-name{font-size:11px;font-weight:700;color:var(--text);margin-bottom:2px}
+.comp-val{font-size:18px;font-weight:700}
+.comp-bar{height:4px;border-radius:2px;background:var(--bd);margin-top:6px;overflow:hidden}
+.comp-bar-fill{height:100%;border-radius:2px;transition:width .4s}
+.comp-badge{position:absolute;top:8px;right:8px;font-size:9px;font-weight:700;padding:1px 6px;border-radius:40px}
+
+/* RUTA CARDS */
+.ruta-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+.rcard{border:2px solid var(--bd);border-radius:var(--r);padding:12px;cursor:pointer;background:var(--white);transition:all .2s}
+.rcard:hover{transform:translateY(-2px)}
+.rcard.sel{border-color:var(--orange);background:#FFF8F5;box-shadow:0 4px 16px rgba(232,99,26,.1)}
+.rcard-num{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.rcard-title{font-size:12px;font-weight:700;color:var(--text);margin-bottom:3px}
+.rcard-q{font-size:9px;font-weight:600;padding:2px 8px;border-radius:40px;display:inline-block;margin-bottom:6px}
+.rcard-desc{font-size:10px;color:var(--muted);line-height:1.4}
+
+/* PLAN BANNER */
+.ruta-banner{border-radius:var(--r);padding:16px 18px;margin-bottom:16px;border-left:5px solid;display:none}
+.rb-title{font-size:13px;font-weight:700;margin-bottom:4px}
+.rb-desc{font-size:11px;line-height:1.6;margin-bottom:8px}
+.rb-action{font-size:10px;font-weight:600;padding:5px 12px;border-radius:6px;display:inline-block}
+
+/* BLOQUES 70-20-10 */
+.bloque{margin-bottom:20px}
+.bloque-header{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.bloque-badge{font-size:13px;font-weight:700;padding:4px 14px;border-radius:40px;color:#fff}
+.bloque-title{font-size:14px;font-weight:700;color:var(--text);flex:1}
+.bloque-sub{font-size:11px;color:var(--muted);margin-bottom:10px}
+.btn-save-blk{font-size:10px;padding:4px 14px;border:none;border-radius:20px;cursor:pointer;font-weight:600;color:#fff}
+
+.act-item{background:var(--white);border:1px solid var(--bd);border-radius:var(--rs);padding:12px 14px;margin-bottom:8px;transition:border .15s}
+.act-item:focus-within{border-color:var(--navy)}
+.act-item-top{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.act-icon{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.act-label{font-size:12px;font-weight:600;color:var(--muted);flex:1}
+.act-check-big{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:11px;color:var(--muted);cursor:pointer;padding:6px 8px;border-radius:6px;background:var(--bg)}
+.act-check-big input{accent-color:var(--green);width:14px;height:14px;cursor:pointer}
+.act-check-big.done{background:var(--gl);color:var(--green)}
+.act-textarea{width:100%;border:none;border-bottom:1px dashed var(--bd);font-size:12px;color:var(--text);padding:4px 0;outline:none;background:transparent;font-family:inherit;resize:none;line-height:1.5}
+.act-textarea:focus{border-bottom-color:var(--navy)}
+
+/* COURSERA */
+.coursera-card{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border-radius:var(--rs);border:1px solid #534AB733;background:#EEEDFE;margin-bottom:6px;text-decoration:none}
+.cc-ico{width:32px;height:32px;border-radius:6px;background:#0056D2;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#fff;font-size:14px;font-weight:700}
+.cc-title{font-size:11px;font-weight:600;color:#3C3489;margin-bottom:1px}
+.cc-meta{font-size:10px;color:#534AB7}
+
+/* TIMELINE CRONOGRAMA */
+.timeline{margin-bottom:20px}
+.tl-year{display:grid;grid-template-columns:repeat(4,1fr);gap:0;position:relative;margin-bottom:8px}
+.tl-q{text-align:center;padding:6px 4px;background:var(--bg);border:1px solid var(--bd);font-size:10px;font-weight:700;color:var(--muted);cursor:default}
+.tl-q:first-child{border-radius:var(--rs) 0 0 var(--rs)}
+.tl-q:last-child{border-radius:0 var(--rs) var(--rs) 0}
+.tl-q.hoy{background:var(--orange);color:#fff;border-color:var(--orange)}
+.tl-row{display:grid;grid-template-columns:180px repeat(4,1fr) 110px;gap:0;border-bottom:1px solid var(--bd)}
+.tl-row:last-child{border-bottom:none}
+.tl-label{padding:8px 10px;font-size:11px;font-weight:500;display:flex;align-items:center;gap:6px}
+.tl-cell{border-left:1px solid var(--bd);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s;min-height:36px}
+.tl-cell:hover{background:var(--nl)}
+.tl-cell.act70{background:var(--navy)}
+.tl-cell.act20{background:var(--orange)}
+.tl-cell.act10{background:var(--green)}
+.tl-dot{width:10px;height:10px;border-radius:50%;background:#fff}
+.tl-resp{padding:6px 8px;font-size:10px;color:var(--muted);border-left:1px solid var(--bd);display:flex;align-items:center}
+.tl-tipo-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+
+/* RACI */
+.raci-table{width:100%;border-collapse:collapse;font-size:12px}
+.raci-table th{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;padding:8px 10px;border-bottom:2px solid var(--bd);color:var(--muted);text-align:center;background:var(--bg)}
+.raci-table th:first-child{text-align:left}
+.raci-table td{padding:7px 10px;border-bottom:1px solid var(--bd);text-align:center;vertical-align:middle}
+.raci-table td:first-child{text-align:left}
+.rpill{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;font-size:10px;font-weight:700;cursor:pointer;transition:transform .1s}
+.rpill:active{transform:scale(.9)}
+.rR{background:var(--navy);color:#fff}
+.rA{background:var(--orange);color:#fff}
+.rC{background:var(--nl);color:var(--navy)}
+.rI{background:#F3F4F6;color:var(--muted);border:1px solid var(--bd)}
+.re{background:transparent;color:#DDD;border:1px dashed #DDD}
+
+/* SEGUIMIENTO — BITÁCORA */
+.bitacora{margin-bottom:16px}
+.bitacora-entry{display:flex;gap:12px;margin-bottom:16px}
+.bit-line{display:flex;flex-direction:column;align-items:center;gap:0;flex-shrink:0}
+.bit-dot{width:12px;height:12px;border-radius:50%;background:var(--navy);flex-shrink:0;margin-top:3px}
+.bit-track{flex:1;width:2px;background:var(--bd);min-height:20px;margin-top:4px}
+.bit-content{flex:1;background:var(--white);border:1px solid var(--bd);border-radius:var(--rs);padding:10px 12px;min-height:60px}
+.bit-fecha{font-size:10px;color:var(--muted);margin-bottom:4px}
+.bit-new{border:1px dashed var(--bd);background:var(--bg)}
+
+/* BARRAS PROGRESO */
+.prog-row{margin-bottom:12px}
+.prog-hdr{display:flex;justify-content:space-between;margin-bottom:4px}
+.prog-lbl{font-size:12px;font-weight:600}
+.prog-val{font-size:12px;font-weight:700}
+.prog-bg{background:var(--bd);border-radius:40px;height:10px;overflow:hidden;margin-bottom:4px}
+.prog-fill{height:10px;border-radius:40px;transition:width .4s}
+.prog-slider{width:100%;accent-color:var(--navy)}
+
+/* KPIs SEGUIMIENTO */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:20px}
+.kpi{background:var(--white);border:1px solid var(--bd);border-radius:var(--r);padding:14px;text-align:center}
+.kpi-num{font-size:24px;font-weight:700;color:var(--navy)}
+.kpi-lbl{font-size:10px;color:var(--muted);margin-top:2px}
+.kpi.alert{border-color:#E24B4A;background:#FCEBEB}
+.kpi.alert .kpi-num{color:#A32D2D}
+.kpi.good{border-color:#3A7D1E;background:var(--gl)}
+.kpi.good .kpi-num{color:var(--green)}
+
+/* NIVEL STEPS CIERRE */
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-bottom:20px;border-radius:var(--r);overflow:hidden;border:1px solid var(--bd)}
+.step{padding:14px;text-align:center;font-size:11px;font-weight:600;color:var(--muted);background:var(--white);border-right:1px solid var(--bd);position:relative}
+.step:last-child{border-right:none}
+.step.done{background:var(--navy);color:#fff}
+.step.current{background:var(--orange);color:#fff}
+.step.next{color:var(--orange);border-top:3px solid var(--orange)}
+.step-n{font-size:22px;font-weight:800;display:block;margin-bottom:2px}
+
+/* VEREDICTO */
+.veredicto-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:20px}
+.vcard{border:2px solid var(--bd);border-radius:var(--r);padding:14px;cursor:pointer;background:var(--white);transition:all .2s;text-align:left}
+.vcard:hover{border-color:var(--navy);transform:translateY(-1px)}
+.vcard.sel{border-color:var(--green);background:var(--gl)}
+.vcard-ico{font-size:22px;margin-bottom:6px}
+.vcard-title{font-size:13px;font-weight:700;margin-bottom:2px}
+.vcard-desc{font-size:11px;color:var(--muted)}
+
+/* FIRMA */
+.firma-row{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:16px}
+.firma-box{border-top:2px solid var(--navy);padding-top:8px;font-size:11px;color:var(--muted);text-align:center;padding-bottom:28px}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--navy);color:#fff;padding:12px 20px;border-radius:var(--r);font-size:13px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .3s;z-index:9999;box-shadow:0 4px 24px rgba(27,42,107,.25)}
+.toast.show{opacity:1}
+
+/* SELECTOR */
+.selector-wrap{margin-bottom:20px;background:var(--white);border-radius:var(--r);border:1px solid var(--bd);padding:16px;display:none}
+.info-box{background:var(--nl);border:1px solid #B0BCE8;border-radius:var(--rs);padding:10px 14px;font-size:12px;color:var(--navy);margin-bottom:12px}
+
+/* CIERRE CELEBRACIÓN */
+.celebracion{text-align:center;padding:32px 20px;display:none}
+.cel-titulo{font-size:24px;font-weight:700;color:var(--navy);margin-bottom:8px}
+.cel-sub{font-size:14px;color:var(--muted);margin-bottom:24px}
+
+@media(max-width:600px){
+  .ruta-grid{grid-template-columns:repeat(2,1fr)}
+  .kpi-grid{grid-template-columns:repeat(2,1fr)}
+  .firma-row{grid-template-columns:1fr}
+  .veredicto-grid{grid-template-columns:1fr}
+  .steps{grid-template-columns:repeat(2,1fr)}
+  .tl-row{grid-template-columns:120px repeat(4,1fr) 80px}
+}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="tb-l">
+    <a href="index.html" class="back">← Dashboard</a>
+    <span style="color:rgba(255,255,255,.2)">|</span>
+    <span class="tb-title">Plan de Desarrollo Individual</span>
+  </div>
+  <div class="tb-r">
+    <button class="btn-exp" onclick="exportarPDIWord()">Exportar PDI</button>
+    <button class="btn-save" onclick="guardarPDI()">Guardar</button>
+  </div>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-top">
+    <div class="avatar-wrap">
+      <div class="avatar" id="h-avatar">?</div>
+      <div class="zona-dot" id="h-zona-dot" style="background:#6B7280"></div>
+    </div>
+    <div class="hero-info">
+      <div class="hero-name" id="h-nombre">Selecciona un colaborador</div>
+      <div class="hero-sub" id="h-sub">Cargo · Empresa</div>
+      <div class="hero-tags" id="h-tags"></div>
+    </div>
+    <div class="hero-right">
+      <div class="vigencia" id="h-vigencia">PDI 2025 — 2026</div>
+      <div id="h-status-msg" style="font-size:11px;color:rgba(255,255,255,.6);margin-top:4px;text-align:right;max-width:160px;line-height:1.4"></div>
+    </div>
+  </div>
+
+  <!-- MÉTRICAS HERO -->
+  <div class="status-bar">
+    <div class="status-item active" onclick="showTab('diagnostico',0)">
+      <div class="status-num" id="sm-pot">—</div>
+      <div class="status-lbl">Potencial</div>
+    </div>
+    <div class="status-item" onclick="showTab('seguimiento',4)">
+      <div class="status-num" id="sm-avance">0%</div>
+      <div class="status-lbl">Avance PDI</div>
+    </div>
+    <div class="status-item" onclick="showTab('seguimiento',4)">
+      <div class="status-num" id="sm-acts">0/9</div>
+      <div class="status-lbl">Actividades</div>
+    </div>
+    <div class="status-item" onclick="showTab('seguimiento',4)">
+      <div class="status-num" id="sm-dias">—</div>
+      <div class="status-lbl">Días al cierre</div>
+    </div>
+    <div class="status-item" onclick="showTab('diagnostico',0)">
+      <div class="status-num" id="sm-zona" style="font-size:12px;padding-top:4px">—</div>
+      <div class="status-lbl">Nine Box</div>
+    </div>
+  </div>
+</div>
+
+<div class="body">
+
+<!-- SELECTOR PERSONA -->
+<div id="selector-wrap" class="selector-wrap">
+  <div class="info-box">Abre este PDI desde el Dashboard seleccionando un líder, o elige aquí:</div>
+  <div class="mgrid">
+    <div class="fbox"><label>Empresa</label>
+      <select id="sel-empresa" onchange="filtrarPersonas()">
+        <option value="italcol">Italcol</option>
+        <option value="italfoods">Italfoods</option>
+        <option value="regional">Regional Centro Funza</option>
+      </select>
+    </div>
+    <div class="fbox"><label>Colaborador</label>
+      <select id="sel-persona" onchange="cargarPersonaDesdeSelector()">
+        <option value="">— Selecciona —</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="tabs-wrap">
+  <div class="tabs" id="tabs-el">
+    <button class="tab active" onclick="showTab('diagnostico',0)"><span class="tab-dot done" id="td-0"></span>Diagnóstico y perfil</button>
+    <button class="tab" onclick="showTab('plan',1)"><span class="tab-dot" id="td-1"></span>Plan 70-20-10</button>
+    <button class="tab" onclick="showTab('cronograma',2)"><span class="tab-dot" id="td-2"></span>Cronograma</button>
+    <button class="tab" onclick="showTab('raci',3)"><span class="tab-dot" id="td-3"></span>Compromisos</button>
+    <button class="tab" onclick="showTab('seguimiento',4)"><span class="tab-dot" id="td-4"></span>Seguimiento</button>
+    <button class="tab" onclick="showTab('cierre',5)"><span class="tab-dot" id="td-5"></span>Cierre</button>
+  </div>
+
+  <!-- ── TAB 1: DIAGNÓSTICO ── -->
+  <div id="tab-diagnostico" class="tab-content visible">
+
+    <!-- INFO GENERAL -->
+    <div class="sec">Información del PDI</div>
+    <div class="mgrid">
+      <div class="fbox"><label>Nombre</label><input id="d-nombre" readonly/></div>
+      <div class="fbox"><label>Cargo</label><input id="d-cargo" readonly/></div>
+      <div class="fbox"><label>Empresa</label><input id="d-empresa" readonly/></div>
+      <div class="fbox"><label>Jefe directo</label><input id="d-jefe" placeholder="Nombre del jefe responsable"/></div>
+      <div class="fbox"><label>Perfil de sucesión</label>
+        <select id="d-sucesion">
+          <option>Talento clave</option><option>Segundo en formación</option>
+          <option>Sucesor listo</option><option>En desarrollo</option>
+        </select>
+      </div>
+      <div class="fbox"><label>Vigencia</label>
+        <div style="display:flex;align-items:center;gap:4px">
+          <input type="month" id="d-inicio" style="flex:1"/>
+          <span style="color:var(--muted);font-size:11px">→</span>
+          <input type="month" id="d-fin" style="flex:1"/>
+        </div>
+      </div>
+    </div>
+
+    <!-- NINE BOX + POTENCIAL -->
+    <div class="sec">Nine Box</div>
+    <div id="zona-card" class="card" style="margin-bottom:16px">
+      <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+        <div id="zona-badge" style="padding:8px 20px;border-radius:40px;font-size:13px;font-weight:700;background:#E8ECFB;color:#1B2A6B">—</div>
+        <div style="flex:1">
+          <div id="zona-desc" style="font-size:12px;color:var(--muted);line-height:1.6"></div>
+        </div>
+        <div style="text-align:center">
+          <div id="d-pot" style="font-size:32px;font-weight:700;color:var(--navy)">—</div>
+          <div style="font-size:10px;color:var(--muted)">Potencial WPI</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SUPERPODERES — énfasis en fortalezas -->
+    <div class="sec">Perfil de competencias WPI</div>
+    <p style="font-size:12px;color:var(--muted);margin-bottom:12px">Las competencias en verde son tus fortalezas clave — el motor de tu plan. Haz clic en cualquier competencia para entender qué significa y cómo desarrollarla.</p>
+    <div class="competencias-grid" id="wpi-chips"></div>
+    <div id="wpi-panel" style="display:none;border-radius:var(--r);padding:14px 16px;margin-bottom:14px;border:1px solid var(--bd)"></div>
+
+    <!-- FORTALEZAS Y OPORTUNIDADES -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+      <div>
+        <div class="sec">Fortalezas clave</div>
+        <textarea class="finput" rows="3" id="d-fortalezas" placeholder="Principales fortalezas identificadas en WPI, evaluación y entrevista de potencial..."></textarea>
+      </div>
+      <div>
+        <div class="sec">Oportunidades de desarrollo</div>
+        <textarea class="finput" rows="3" id="d-oportunidades" placeholder="Competencias a fortalecer que, al desarrollarse, ampliarán el impacto y la proyección del líder..."></textarea>
+      </div>
+    </div>
+
+    <!-- SEGUNDO -->
+    <div class="sec">Sucesión</div>
+    <div class="mgrid">
+      <div class="fbox"><label>Es segundo de</label><input id="d-segundo-de" placeholder="Cargo o titular"/></div>
+      <div class="fbox"><label>Tiene segundo asignado</label><input id="d-tiene-segundo" placeholder="Nombre del segundo"/></div>
+      <div class="fbox"><label>Veredicto sucesión</label>
+        <select id="d-veredicto-suc">
+          <option>Sucesor listo</option><option>En formación</option><option>No aplica aún</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── TAB 2: PLAN 70-20-10 ── -->
+  <div id="tab-plan" class="tab-content">
+
+    <!-- RUTA -->
+    <div class="sec">Tu ruta de desarrollo</div>
+    <div id="ruta-banner" class="ruta-banner"></div>
+    <div class="ruta-grid" id="ruta-grid">
+      <div class="rcard" data-ruta="1" onclick="selectRuta(1)">
+        <div class="rcard-num" style="color:#991B1B">Ruta 1</div>
+        <div class="rcard-title">Con Oportunidad</div>
+        <div class="rcard-q" style="background:#FEE2E2;color:#991B1B">Q6 · Q4</div>
+        <div class="rcard-desc">Estabilizar, retener y construir bases sólidas de liderazgo.</div>
+      </div>
+      <div class="rcard" data-ruta="2" onclick="selectRuta(2)">
+        <div class="rcard-num" style="color:var(--orange)">Ruta 2</div>
+        <div class="rcard-title">Fortalecimiento</div>
+        <div class="rcard-q" style="background:var(--ol);color:var(--orange)">Q4 · Q3</div>
+        <div class="rcard-desc">Ampliar perspectiva con movilidad, rotación y nuevos retos.</div>
+      </div>
+      <div class="rcard" data-ruta="3" onclick="selectRuta(3)">
+        <div class="rcard-num" style="color:var(--navy)">Ruta 3</div>
+        <div class="rcard-title">Top Talent</div>
+        <div class="rcard-q" style="background:var(--nl);color:var(--navy)">Q2 · Q1</div>
+        <div class="rcard-desc">Mentoring directivo, proyectos estratégicos y plan de sucesión.</div>
+      </div>
+      <div class="rcard" data-ruta="4" onclick="selectRuta(4)">
+        <div class="rcard-num" style="color:var(--green)">Ruta 4</div>
+        <div class="rcard-title">Sucesor</div>
+        <div class="rcard-q" style="background:var(--gl);color:var(--green)">Listo</div>
+        <div class="rcard-desc">Preparación inmediata para asumir posiciones clave.</div>
+      </div>
+    </div>
+
+    <!-- COURSERA SUGERIDOS -->
+    <div id="coursera-sugeridos" style="margin-bottom:12px"></div>
+
+    <!-- 70% -->
+    <div class="bloque">
+      <div class="bloque-header">
+        <span class="bloque-badge" style="background:var(--navy)">70%</span>
+        <span class="bloque-title">Experiencias en el trabajo</span>
+        <button class="btn-save-blk" style="background:var(--navy)" onclick="guardarBloque('70')">Guardar</button>
+      </div>
+      <p class="bloque-sub">Proyectos retadores · rotación · liderazgo de iniciativas · KPIs · hasta 3 acciones</p>
+      <div id="acts-70">
+        <div class="act-item">
+          <div class="act-item-top"><div class="act-icon" style="background:var(--nl)">🎯</div><span class="act-label">Acción 1</span></div>
+          <textarea class="act-textarea" rows="2" id="act70-1" placeholder="Ej: Liderar el proyecto de mejora de tiempos de despacho — objetivo, entregable, plazo y métrica de éxito..."></textarea>
+          <label class="act-check-big" id="lbl-chk70-1"><input type="checkbox" id="chk70-1" onchange="calcAvance();checkDone(this,'lbl-chk70-1')"/> Completada</label>
+        </div>
+        <div class="act-item">
+          <div class="act-item-top"><div class="act-icon" style="background:var(--nl)">🔄</div><span class="act-label">Acción 2</span></div>
+          <textarea class="act-textarea" rows="2" id="act70-2" placeholder="Ej: Rotación de 2 semanas por el área de Supply Chain — aprendizajes esperados y validación..."></textarea>
+          <label class="act-check-big" id="lbl-chk70-2"><input type="checkbox" id="chk70-2" onchange="calcAvance();checkDone(this,'lbl-chk70-2')"/> Completada</label>
+        </div>
+        <div class="act-item">
+          <div class="act-item-top"><div class="act-icon" style="background:var(--nl)">📊</div><span class="act-label">Acción 3</span></div>
+          <textarea class="act-textarea" rows="2" id="act70-3" placeholder="Ej: Presentar resultados del área en comité directivo Q2 — tema, audiencia y objetivo..."></textarea>
+          <label class="act-check-big" id="lbl-chk70-3"><input type="checkbox" id="chk70-3" onchange="calcAvance();checkDone(this,'lbl-chk70-3')"/> Completada</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- 20% -->
+    <div class="bloque">
+      <div class="bloque-header">
+        <span class="bloque-badge" style="background:var(--orange)">20%</span>
+        <span class="bloque-title">Aprendizaje social</span>
+        <button class="btn-save-blk" style="background:var(--orange)" onclick="guardarBloque('20')">Guardar</button>
+      </div>
+      <p class="bloque-sub">Mentoring · coaching · feedback 360° · comunidades de práctica · hasta 3 acciones</p>
+      <div id="acts-20">
+        <div class="act-item">
+          <div class="act-item-top"><div class="act-icon" style="background:var(--ol)">🤝</div><span class="act-label">Acción 1</span></div>
+          <textarea class="act-textarea" rows="2" id="act20-1" placeholder="Ej: Sesiones quincenales de mentoring con [nombre] — foco en influencia y visión estratégica..."></textarea>
+          <label class="act-check-big" id="lbl-chk20-1"><input type="checkbox" id="chk20-1" onchange="calcAvance();checkDone(this,'lbl-chk20-1')"/> Completada</label>
+        </div>
+        <div class="act-item">
+          <div class="act-item-top"><div class="act-icon" style="background:var(--ol)">💬</div><span class="act-label">Acción 2</span></div>
+          <textarea class="act-textarea" rows="2" id="act20-2" placeholder="Ej: Feedback 360° en Q2 — participantes, competencias foco y plan de acción post-360..."></textarea>
+          <label class="act-check-big" id="lbl-chk20-2"><input type="checkbox" id="chk20-2" onchange="calcAvance();checkDone(this,'lbl-chk20-2')"/> Completada</label>
+        </div>
+        <div class="act-item">
+          <div class="act-item-top"><div class="act-icon" style="background:var(--ol)">🎙</div><span class="act-label">Acción 3</span></div>
+          <textarea class="act-textarea" rows="2" id="act20-3" placeholder="Ej: Participar como expositor en la comunidad de práctica de líderes Italcol — Q3..."></textarea>
+          <label class="act-check-big" id="lbl-chk20-3"><input type="checkbox" id="chk20-3" onchange="calcAvance();checkDone(this,'lbl-chk20-3')"/> Completada</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- 10% -->
+    <div class="bloque">
+      <div class="bloque-header">
+        <span class="bloque-badge" style="background:var(--green)">10%</span>
+        <span class="bloque-title">Formación formal</span>
+        <button class="btn-save-blk" style="background:var(--green)" onclick="guardarBloque('10')">Guardar</button>
+      </div>
+      <p class="bloque-sub">Coursera · talleres · certificaciones · hasta 3 acciones</p>
+      <div id="coursera-sugeridos-plan" style="margin-bottom:10px"></div>
+      <div id="acts-10">
+        <div class="act-item">
+          <div class="act-item-top"><div class="act-icon" style="background:var(--gl)">📚</div><span class="act-label">Acción 1</span></div>
+          <textarea class="act-textarea" rows="2" id="act10-1" placeholder="Ej: Curso Coursera — Leadership & Emotional Intelligence (ISB) · Q1 · certificado requerido..."></textarea>
+          <label class="act-check-big" id="lbl-chk10-1"><input type="checkbox" id="chk10-1" onchange="calcAvance();checkDone(this,'lbl-chk10-1')"/> Completada</label>
+        </div>
+        <div class="act-item">
+          <div class="act-item-top"><div class="act-icon" style="background:var(--gl)">🏆</div><span class="act-label">Acción 2</span></div>
+          <textarea class="act-textarea" rows="2" id="act10-2" placeholder="Ej: Taller corporativo de Comunicación Ejecutiva — Q2 · presencial · 16 horas..."></textarea>
+          <label class="act-check-big" id="lbl-chk10-2"><input type="checkbox" id="chk10-2" onchange="calcAvance();checkDone(this,'lbl-chk10-2')"/> Completada</label>
+        </div>
+        <div class="act-item">
+          <div class="act-item-top"><div class="act-icon" style="background:var(--gl)">🔬</div><span class="act-label">Acción 3</span></div>
+          <textarea class="act-textarea" rows="2" id="act10-3" placeholder="Ej: Aprendizaje técnico en gestión financiera — recurso recomendado por gerencia · Q3..."></textarea>
+          <label class="act-check-big" id="lbl-chk10-3"><input type="checkbox" id="chk10-3" onchange="calcAvance();checkDone(this,'lbl-chk10-3')"/> Completada</label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── TAB 3: CRONOGRAMA ── -->
+  <div id="tab-cronograma" class="tab-content">
+    <p style="font-size:12px;color:var(--muted);margin-bottom:14px">Haz clic en las celdas para activar actividades por trimestre.</p>
+    <div style="overflow-x:auto">
+      <div style="min-width:560px">
+        <div style="display:grid;grid-template-columns:180px repeat(4,1fr) 110px;gap:0;margin-bottom:4px">
+          <div style="font-size:10px;font-weight:700;color:var(--muted);padding:0 10px;text-transform:uppercase;letter-spacing:.5px">Actividad</div>
+          <div id="tl-q1" style="text-align:center;font-size:11px;font-weight:700;padding:6px 4px;border-radius:var(--rs) 0 0 var(--rs);background:var(--nl);color:var(--navy)">Q1 Ene–Mar</div>
+          <div id="tl-q2" style="text-align:center;font-size:11px;font-weight:700;padding:6px 4px;background:var(--nl);color:var(--navy)">Q2 Abr–Jun</div>
+          <div id="tl-q3" style="text-align:center;font-size:11px;font-weight:700;padding:6px 4px;background:var(--nl);color:var(--navy)">Q3 Jul–Sep</div>
+          <div id="tl-q4" style="text-align:center;font-size:11px;font-weight:700;padding:6px 4px;border-radius:0 var(--rs) var(--rs) 0;background:var(--nl);color:var(--navy)">Q4 Oct–Dic</div>
+          <div style="font-size:10px;font-weight:700;color:var(--muted);padding:0 8px;text-align:center;text-transform:uppercase;letter-spacing:.5px">Resp.</div>
+        </div>
+        <div id="tl-body" style="background:var(--white);border-radius:var(--r);border:1px solid var(--bd);overflow:hidden"></div>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px">
+      <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted)"><span style="width:10px;height:10px;border-radius:2px;background:var(--navy);display:inline-block"></span>70% Experiencia</span>
+      <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted)"><span style="width:10px;height:10px;border-radius:2px;background:var(--orange);display:inline-block"></span>20% Aprendizaje</span>
+      <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted)"><span style="width:10px;height:10px;border-radius:2px;background:var(--green);display:inline-block"></span>10% Formación</span>
+    </div>
+    <div style="margin-top:16px">
+      <div class="sec">Notas del cronograma</div>
+      <textarea class="finput" rows="3" id="crono-notas" placeholder="Cambios de fecha, ajustes al plan, observaciones..."></textarea>
+    </div>
+  </div>
+
+  <!-- ── TAB 4: RACI (COMPROMISOS) ── -->
+  <div id="tab-raci" class="tab-content">
+    <p style="font-size:12px;color:var(--muted);margin-bottom:12px">El plan funciona cuando todos saben qué les toca. Haz clic en las letras para ajustar responsabilidades.</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px">
+      <span style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted)"><span class="rpill rR" style="width:22px;height:22px;font-size:9px">R</span>Responsable</span>
+      <span style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted)"><span class="rpill rA" style="width:22px;height:22px;font-size:9px">A</span>Aprueba</span>
+      <span style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted)"><span class="rpill rC" style="width:22px;height:22px;font-size:9px">C</span>Consulta</span>
+      <span style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted)"><span class="rpill rI" style="width:22px;height:22px;font-size:9px">I</span>Informado</span>
+    </div>
+    <div style="overflow-x:auto">
+      <table class="raci-table">
+        <thead><tr>
+          <th style="text-align:left;min-width:180px">Actividad</th>
+          <th>Colaborador</th><th>Jefe</th><th>RRHH</th><th>Mentor</th><th>Gerencia</th>
+        </tr></thead>
+        <tbody id="raci-body"></tbody>
+      </table>
+    </div>
+    <div style="margin-top:16px">
+      <div class="sec">Compromisos del jefe directo</div>
+      <textarea class="finput" rows="3" id="raci-compromisos" placeholder="¿Qué se compromete a hacer el jefe directo? Sesiones, espacios, recursos, presentaciones..."></textarea>
+    </div>
+  </div>
+
+  <!-- ── TAB 5: SEGUIMIENTO ── -->
+  <div id="tab-seguimiento" class="tab-content">
+
+    <!-- KPIs con estado emocional -->
+    <div id="estado-pdi" class="card" style="margin-bottom:16px;border-left:4px solid var(--navy)">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div id="estado-emoji" style="font-size:28px">📋</div>
+        <div>
+          <div id="estado-titulo" style="font-size:14px;font-weight:700;color:var(--navy)">PDI activo</div>
+          <div id="estado-desc" style="font-size:12px;color:var(--muted)">Completa las actividades y registra tus avances</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="kpi-grid">
+      <div class="kpi" id="kpi-avance"><div class="kpi-num" id="k-avance">0%</div><div class="kpi-lbl">Avance general</div></div>
+      <div class="kpi" id="kpi-acts"><div class="kpi-num" id="k-acts">0/9</div><div class="kpi-lbl">Actividades</div></div>
+      <div class="kpi" id="kpi-dias"><div class="kpi-num" id="k-dias">—</div><div class="kpi-lbl">Días al cierre</div></div>
+      <div class="kpi"><div class="kpi-num" id="k-ninebox" style="font-size:13px;padding-top:5px">—</div><div class="kpi-lbl">Nine Box</div></div>
+    </div>
+
+    <!-- Progreso por dimensión -->
+    <div class="sec">Progreso por dimensión</div>
+    <div style="background:var(--white);border:1px solid var(--bd);border-radius:var(--r);padding:16px;margin-bottom:16px">
+      <div class="prog-row">
+        <div class="prog-hdr"><span class="prog-lbl" style="color:var(--navy)">70% — Experiencias</span><span class="prog-val" style="color:var(--navy)" id="pv70">0%</span></div>
+        <div class="prog-bg"><div class="prog-fill" id="pb70" style="width:0%;background:var(--navy)"></div></div>
+        <input type="range" class="prog-slider" min="0" max="100" value="0" step="5" oninput="updateProg('70',this.value)"/>
+      </div>
+      <div class="prog-row">
+        <div class="prog-hdr"><span class="prog-lbl" style="color:var(--orange)">20% — Aprendizaje social</span><span class="prog-val" style="color:var(--orange)" id="pv20">0%</span></div>
+        <div class="prog-bg"><div class="prog-fill" id="pb20" style="width:0%;background:var(--orange)"></div></div>
+        <input type="range" class="prog-slider" min="0" max="100" value="0" step="5" style="accent-color:var(--orange)" oninput="updateProg('20',this.value)"/>
+      </div>
+      <div class="prog-row" style="margin-bottom:0">
+        <div class="prog-hdr"><span class="prog-lbl" style="color:var(--green)">10% — Formación formal</span><span class="prog-val" style="color:var(--green)" id="pv10">0%</span></div>
+        <div class="prog-bg"><div class="prog-fill" id="pb10" style="width:0%;background:var(--green)"></div></div>
+        <input type="range" class="prog-slider" min="0" max="100" value="0" step="5" style="accent-color:var(--green)" oninput="updateProg('10',this.value)"/>
+      </div>
+    </div>
+
+    <!-- BITÁCORA -->
+    <div class="sec">Registro de sesiones de seguimiento</div>
+    <div class="bitacora" id="bitacora-list"></div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
+      <input type="date" id="bit-fecha" style="border:1px solid var(--bd);border-radius:var(--rs);padding:7px 10px;font-size:12px;font-family:inherit;outline:none"/>
+      <button onclick="addEntradaBitacora()" style="background:var(--navy);color:#fff;border:none;border-radius:var(--rs);padding:7px 16px;font-size:12px;font-weight:600;cursor:pointer">+ Registrar sesión</button>
+    </div>
+
+    <div class="sec">Evidencias y logros</div>
+    <textarea class="finput" rows="4" id="seg-evidencias" placeholder="Proyectos entregados, certificaciones obtenidas, reconocimientos, hitos cumplidos. Cada evidencia que registras es un argumento para tu próximo nivel..."></textarea>
+  </div>
+
+  <!-- ── TAB 6: CIERRE ── -->
+  <div id="tab-cierre" class="tab-content">
+
+    <!-- CELEBRACIÓN si avance alto -->
+    <div id="celebracion" class="celebracion">
+      <div style="font-size:48px;margin-bottom:12px">🏆</div>
+      <div class="cel-titulo" id="cel-titulo">PDI finalizado exitosamente</div>
+      <div class="cel-sub" id="cel-sub">Resumen del proceso de desarrollo.</div>
+    </div>
+
+    <!-- PROGRESIÓN -->
+    <div class="sec">Tu camino de crecimiento</div>
+    <div class="steps" id="nivel-steps">
+      <div class="step done"><span class="step-n">1</span>Diagnóstico<br><span style="font-size:10px;font-weight:400">WPI · Nine Box</span></div>
+      <div class="step current"><span class="step-n">2</span>En desarrollo<br><span style="font-size:10px;font-weight:400">PDI activo</span></div>
+      <div class="step next"><span class="step-n">3</span>Consolidando<br><span style="font-size:10px;font-weight:400">Resultados</span></div>
+      <div class="step"><span class="step-n">4</span>Listo<br><span style="font-size:10px;font-weight:400">Sucesor confirmado</span></div>
+    </div>
+
+    <!-- VOZ DEL COLABORADOR -->
+    <div class="sec">Evaluación del colaborador</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+      <div>
+        <div style="font-size:12px;font-weight:600;color:var(--navy);margin-bottom:6px">Aprendizajes del período</div>
+        <textarea class="finput" rows="4" id="c-aprendizajes" placeholder="Describa los principales aprendizajes, competencias desarrolladas y momentos de quiebre positivo durante el PDI..."></textarea>
+      </div>
+      <div>
+        <div style="font-size:12px;font-weight:600;color:var(--navy);margin-bottom:6px">Logros y evidencias concretas</div>
+        <textarea class="finput" rows="4" id="c-logros" placeholder="Proyectos entregados, métricas alcanzadas, nuevas responsabilidades, reconocimientos..."></textarea>
+      </div>
+    </div>
+
+    <!-- VEREDICTO JEFE -->
+    <div class="sec">Veredicto del jefe directo</div>
+    <div class="veredicto-grid" id="veredicto-grid">
+      <div class="vcard" onclick="selectVeredicto(this,'sucesor')">
+        <div class="vcard-ico">✅</div>
+        <div class="vcard-title">Sucesor confirmado</div>
+        <div class="vcard-desc">Listo para asumir la posición o ampliar responsabilidades</div>
+      </div>
+      <div class="vcard" onclick="selectVeredicto(this,'continua')">
+        <div class="vcard-ico">🚀</div>
+        <div class="vcard-title">Continúa el plan</div>
+        <div class="vcard-desc">Muy buen avance — extiende el PDI al siguiente período</div>
+      </div>
+      <div class="vcard" onclick="selectVeredicto(this,'replantear')">
+        <div class="vcard-ico">🔄</div>
+        <div class="vcard-title">Replantear ruta</div>
+        <div class="vcard-desc">El contexto cambió — ajustar la estrategia de desarrollo</div>
+      </div>
+      <div class="vcard" onclick="selectVeredicto(this,'evaluar')">
+        <div class="vcard-ico">🔍</div>
+        <div class="vcard-title">Evaluar alineación</div>
+        <div class="vcard-desc">Revisar si el cargo actual es el mejor escenario de crecimiento</div>
+      </div>
+    </div>
+
+    <!-- COMPROMISOS PRÓXIMOS -->
+    <div class="sec">Próximos pasos y compromisos</div>
+    <textarea class="finput" rows="3" id="c-compromisos-prox" placeholder="Nuevas metas, próximo PDI, siguiente fase de sucesión, rol proyectado en los próximos 12 meses..."></textarea>
+
+    <!-- FIRMAS -->
+    <div class="card" style="margin-top:20px">
+      <div class="sec">Firmas de validación</div>
+      <div class="firma-row">
+        <div class="firma-box">Colaborador<br><br><input style="border:none;border-bottom:1px solid var(--bd);width:100%;font-size:12px;outline:none;text-align:center;background:transparent" placeholder="Nombre y fecha" id="firma-colaborador"/></div>
+        <div class="firma-box">Jefe directo<br><br><input style="border:none;border-bottom:1px solid var(--bd);width:100%;font-size:12px;outline:none;text-align:center;background:transparent" placeholder="Nombre y fecha" id="firma-jefe"/></div>
+        <div class="firma-box">Formación & Cultura<br><br><input style="border:none;border-bottom:1px solid var(--bd);width:100%;font-size:12px;outline:none;text-align:center;background:transparent" placeholder="Nombre y fecha" id="firma-rrhh"/></div>
+      </div>
+    </div>
+
+    <!-- BOTONES CIERRE -->
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:20px">
+      <button onclick="guardarPDI()" style="flex:1;padding:12px;background:var(--orange);color:#fff;border:none;border-radius:var(--r);font-size:13px;font-weight:700;cursor:pointer">Guardar PDI completo</button>
+      <button onclick="exportarPDIWord()" style="flex:1;padding:12px;background:var(--navy);color:#fff;border:none;border-radius:var(--r);font-size:13px;font-weight:700;cursor:pointer">Exportar PDI (Word/HTML)</button>
+    </div>
+  </div>
+
+</div><!-- /tabs-wrap -->
+</div><!-- /body -->
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════════════════════════════
+// DATOS
+// ══════════════════════════════════════════════════════════════════
+const PERSONAS = {
+  italcol:[
+    {nombre:"Balaguera Guiza Hugo Armando",cargo:"Líder",d_wpi:6.2,pot:7,zona:"Colaborador Clave"},
+    {nombre:"Juan Carlos Fernández",cargo:"Líder",d_wpi:7.1,pot:8,zona:"Talento Alto Potencial"},
+    {nombre:"Gómez Rueda Carlos Eduardo",cargo:"Líder",d_wpi:6.8,pot:7,zona:"Colaborador Clave"},
+    {nombre:"Juan David Moncada",cargo:"Líder",d_wpi:6.5,pot:6,zona:"Destacado"},
+    {nombre:"Rojas Pinilla Alejandro",cargo:"Líder",d_wpi:7.8,pot:8,zona:"Talento Alto Potencial"},
+    {nombre:"Alejandra Mojica",cargo:"Líder",d_wpi:6.0,pot:6,zona:"Especialista"},
+    {nombre:"Carlos Mauricio Castro",cargo:"Líder",d_wpi:7.2,pot:7,zona:"Colaborador Clave"},
+    {nombre:"Pizarro Toro Gustavo Eliecer",cargo:"Líder",d_wpi:6.3,pot:6,zona:"Destacado"},
+    {nombre:"Cadavid Hernández Juan Felipe",cargo:"Líder",d_wpi:7.5,pot:8,zona:"Talento Alto Potencial"},
+    {nombre:"Ramírez Sierra Héctor Alejandro",cargo:"Líder",d_wpi:6.1,pot:5,zona:"En Desarrollo"},
+    {nombre:"Nelson Álvarez",cargo:"Líder",d_wpi:6.8,pot:7,zona:"Colaborador Clave"},
+    {nombre:"Andrés Felipe Zapata",cargo:"Líder",d_wpi:7.0,pot:7,zona:"Destacado"},
+    {nombre:"Castro Quintero Carlos Mauricio",cargo:"Líder",d_wpi:7.4,pot:8,zona:"Talento Alto Potencial"},
+    {nombre:"Ríos Gómez Cristian Mauricio",cargo:"Líder",d_wpi:6.5,pot:6,zona:"Destacado"},
+    {nombre:"Higuita Uribe Julio César",cargo:"Líder",d_wpi:6.9,pot:7,zona:"Colaborador Clave"},
+    {nombre:"Flórez Schneider Martín Augusto",cargo:"Líder",d_wpi:7.1,pot:7,zona:"Colaborador Clave"},
+    {nombre:"Aristizábal Franco Manuel D.",cargo:"Líder",d_wpi:6.4,pot:6,zona:"Especialista"},
+    {nombre:"Guarín Camacho Jorge Eduardo",cargo:"Líder",d_wpi:6.7,pot:7,zona:"Destacado"},
+    {nombre:"González Córdoba Santiago",cargo:"Líder",d_wpi:7.3,pot:8,zona:"Talento Alto Potencial"},
+    {nombre:"Pardo Miller Felipe",cargo:"Líder",d_wpi:6.2,pot:5,zona:"En Desarrollo"},
+    {nombre:"Pombo Holguín Juan Guillermo",cargo:"Líder",d_wpi:7.0,pot:7,zona:"Colaborador Clave"},
+    {nombre:"Restrepo Lozano Juan Rafael",cargo:"Líder",d_wpi:6.8,pot:7,zona:"Destacado"},
+    {nombre:"Javier Pérez",cargo:"Líder",d_wpi:6.5,pot:6,zona:"Especialista"},
+    {nombre:"Jossi Esteban Arguelles",cargo:"Líder",d_wpi:5.5,pot:3,zona:"Plan de Acción"}
+  ],
+  italfoods:[
+    {nombre:"Claudia Meléndez",cargo:"Líder",d_wpi:7.2,pot:8,zona:"Talento Alto Potencial"},
+    {nombre:"Daniel Grillo",cargo:"Líder",d_wpi:6.8,pot:7,zona:"Colaborador Clave"},
+    {nombre:"Luz Adriana Luna",cargo:"Líder",d_wpi:6.5,pot:6,zona:"Destacado"},
+    {nombre:"Heidy Díaz Castro",cargo:"Líder",d_wpi:7.0,pot:7,zona:"Colaborador Clave"},
+    {nombre:"Claudia Ruiz",cargo:"Líder",d_wpi:6.3,pot:6,zona:"Especialista"},
+    {nombre:"Felipe Castaño",cargo:"Líder",d_wpi:7.5,pot:8,zona:"Talento Alto Potencial"},
+    {nombre:"Darío García",cargo:"Líder",d_wpi:6.1,pot:5,zona:"En Desarrollo"},
+    {nombre:"Luz Karime Galvis",cargo:"Líder",d_wpi:6.9,pot:7,zona:"Colaborador Clave"},
+    {nombre:"Diego Osorio Vargas",cargo:"Líder",d_wpi:7.1,pot:7,zona:"Destacado"},
+    {nombre:"Nelson Duarte Murcia",cargo:"Líder",d_wpi:6.4,pot:6,zona:"Especialista"},
+    {nombre:"Luis Castiblanco",cargo:"Líder",d_wpi:6.7,pot:7,zona:"Destacado"},
+    {nombre:"Oscar Roa Plazas",cargo:"Líder",d_wpi:7.3,pot:8,zona:"Talento Alto Potencial"},
+    {nombre:"Olga Corredor",cargo:"Líder",d_wpi:6.0,pot:5,zona:"En Desarrollo"}
+  ],
+  regional:[
+    {nombre:"Carlos Mauricio Castro Quintero",cargo:"Líder Regional",d_wpi:7.8,pot:9,zona:"Talento Alto Potencial",segundo:"Camilo Cadavid",es_sucesor:true},
+    {nombre:"Diana Carolina Matulevich",cargo:"Líder Regional",d_wpi:6.5,pot:6,zona:"Especialista",segundo:"Ronal Villalobos",es_sucesor:false},
+    {nombre:"Hakin Rodriguez Vargas",cargo:"Líder Regional",d_wpi:7.2,pot:7,zona:"Destacado",segundo:"Brayan Acosta",es_sucesor:true},
+    {nombre:"Jossie Esteban Arguelles",cargo:"Líder Regional",d_wpi:6.8,pot:8,zona:"Talento Alto Potencial",segundo:"Jhoser Cervantes",es_sucesor:true},
+    {nombre:"Alejandro Rojas Pinilla",cargo:"Líder Regional",d_wpi:7.5,pot:8,zona:"Talento Alto Potencial",segundo:"Carlos M. Castro",es_sucesor:true},
+    {nombre:"Yasmine García Torralba",cargo:"Líder Regional",d_wpi:6.9,pot:7,zona:"Colaborador Clave",segundo:null,es_sucesor:false},
+    {nombre:"Vanessa Leguizamón",cargo:"Líder Regional",d_wpi:5.0,pot:5,zona:"En Desarrollo",segundo:"Melisa Serrato",es_sucesor:false,dummy:true},
+    {nombre:"Yaqueline Tovar Quintero",cargo:"Líder Regional",d_wpi:7.0,pot:7,zona:"Destacado",segundo:"Carolina Martínez",es_sucesor:true},
+    {nombre:"Lady Julieth Prada",cargo:"Líder Regional",d_wpi:6.3,pot:6,zona:"Especialista",segundo:null,es_sucesor:false},
+    {nombre:"Luis Eduardo Gutiérrez",cargo:"Líder Regional",d_wpi:6.1,pot:5,zona:"En Desarrollo",segundo:"Nataly Hernández",es_sucesor:false},
+    {nombre:"Angie Carolina Martínez",cargo:"Líder Regional",d_wpi:7.4,pot:8,zona:"Talento Alto Potencial",segundo:"Jhon Fredy Donato",es_sucesor:true},
+    {nombre:"Maria Carolina Chala",cargo:"Líder Regional",d_wpi:7.2,pot:8,zona:"Talento Alto Potencial",segundo:"Zaidy Y. Alfonso",es_sucesor:true}
+  ]
+};
+
+const WPI_DESC = {
+  "Influencia":"Capacidad de persuadir e impactar a otros sin depender de la autoridad formal. Alta influencia = genera alianzas, convicción y movimiento en la organización.",
+  "Determinación":"Persistencia ante los obstáculos y capacidad de mantener el esfuerzo hasta completar lo que se empieza.",
+  "Autocontrol":"Regulación emocional e impulsiva. Alto autocontrol = responde con intención, mantiene la calma bajo presión.",
+  "Tolerancia al estrés":"Estabilidad emocional en entornos de alta demanda. Alta tolerancia = funciona bien bajo presión sin que afecte su desempeño.",
+  "Liderazgo":"Tendencia natural a dirigir, guiar e inspirar a otros. Alto liderazgo = genera dirección clara, empodera a su equipo.",
+  "Orientación a resultados":"Foco en cumplir y superar los objetivos acordados. Alta orientación = genera sentido de urgencia y no descansa hasta lograr la meta.",
+  "Pensamiento estratégico":"Capacidad de conectar decisiones cotidianas con el panorama completo del negocio.",
+  "Comunicación":"Claridad, impacto y adaptación del mensaje según la audiencia.",
+  "Trabajo en equipo":"Preferencia y habilidad para colaborar, compartir y construir con otros.",
+  "Toma de decisiones":"Capacidad de decidir con análisis, agilidad y responsabilidad.",
+  "Adaptabilidad":"Facilidad para ajustarse a cambios, nuevos contextos y entornos inciertos.",
+  "Innovación":"Generación de ideas nuevas y aplicación creativa de soluciones.",
+  "Orientación al cliente":"Foco genuino en entender y satisfacer las necesidades del cliente.",
+  "Planeación":"Organización anticipada del trabajo con claridad de fechas, recursos y responsables.",
+  "Negociación":"Habilidad para encontrar acuerdos que generen valor para ambas partes.",
+  "Gestión del cambio":"Capacidad de liderar transiciones organizacionales con claridad y confianza.",
+  "Compromiso":"Nivel de responsabilidad y lealtad con los objetivos. Alto compromiso = siempre se puede contar con esta persona.",
+  "Iniciativa":"Proactividad; actuar sin esperar instrucciones. Alta iniciativa = anticipa situaciones y no espera que le digan qué hacer.",
+  "Resiliencia":"Capacidad de recuperarse de los fracasos y seguir adelante con energía.",
+  "Disciplina":"Consistencia y constancia en los hábitos de trabajo.",
+  "Visión de negocio":"Comprensión del funcionamiento del negocio, sus métricas y su entorno competitivo.",
+  "Potencial de crecimiento":"Capacidad y disposición para asumir más responsabilidad y crecer. Alto potencial = aprende rápido y busca desafíos."
+};
+
+const WPI_COMO_POTENCIAR = {
+  "Influencia":"Busca oportunidades de liderar sin autoridad formal — coordina un proyecto transversal, presenta propuestas a liderazgo, practica conectar tus ideas con los intereses de tu audiencia.",
+  "Determinación":"Define metas con fechas inamovibles y compártelas con tu jefe. Cuando sientas el impulso de rendirte, pregúntate: ¿qué me falta para terminar, no para rendirme?",
+  "Autocontrol":"Practica la pausa intencional: antes de responder en situaciones de presión, respira 5 segundos. Lleva un registro de situaciones que te desestabilizan para entender tus patrones.",
+  "Tolerancia al estrés":"Aumenta gradualmente la exposición a situaciones de presión. El coaching y el mindfulness han demostrado resultados concretos en esta competencia.",
+  "Liderazgo":"Acepta responsabilidades donde debas movilizar a otros sin autoridad directa. La mentoría y la facilitación de equipos aceleran esta competencia más que cualquier curso.",
+  "Orientación a resultados":"Define tus 3 métricas clave del trimestre y hazle seguimiento semanal. Comparte el avance con tu jefe. Lo que se mide y se comunica, se logra.",
+  "Pensamiento estratégico":"Antes de tomar una decisión, pregúntate: ¿cómo impacta esto a otras áreas? ¿Qué pasa en 6 meses si lo hago así? Pide participar en espacios de decisión estratégica.",
+  "Comunicación":"Practica presentar ideas en máximo 3 minutos. Pide feedback específico después de reuniones clave. La escritura diaria también desarrolla esta competencia.",
+  "Trabajo en equipo":"Identifica dos personas con quienes habitualmente no colaboras y busca un proyecto conjunto. Ofrece ayuda antes de que te la pidan.",
+  "Toma de decisiones":"Practica decidir con el 70% de la información — la perfección es el mayor enemigo de la decisión. Define un marco propio: ¿qué datos necesito? ¿qué riesgos asumo?",
+  "Adaptabilidad":"Voluntarízate para proyectos fuera de tu zona de confort. Cada vez que algo cambia de plan, pregúntate qué oportunidad trae el cambio en lugar de qué perdes.",
+  "Innovación":"Reserva 30 minutos semanales para pensar en un problema no resuelto de tu área. Comparte las ideas aunque no sean perfectas — la innovación nace del volumen.",
+  "Orientación al cliente":"Habla directamente con 2 clientes este trimestre, internos o externos. Escucha sin defender. Lo que ellos dicen vale más que cualquier informe.",
+  "Planeación":"Usa una herramienta simple de seguimiento (lista, tablero, hoja). El plan no vale si no tiene fechas y responsables. Revísalo cada lunes.",
+  "Negociación":"Antes de negociar, escribe 3 cosas que necesitas y 3 que puede necesitar la otra parte. La preparación es el 80% de una buena negociación.",
+  "Gestión del cambio":"Cuando lideres un cambio, comunica el porqué antes del qué. Las personas resisten el cambio cuando no entienden la razón detrás.",
+  "Compromiso":"Acepta solo los compromisos que puedes cumplir. Cumplir siempre, aunque sea poco, construye más reputación que comprometerse con mucho y fallar.",
+  "Iniciativa":"Esta semana, identifica un problema que nadie haya resuelto y propón una solución — aunque sea parcial. La iniciativa se entrena tomando el primer paso, no esperando el momento perfecto.",
+  "Resiliencia":"Lleva un registro de los momentos difíciles que superaste. Cuando llegue el próximo, léelo. El coaching y la reflexión estructurada aceleran mucho el desarrollo de esta competencia.",
+  "Disciplina":"Elige UN hábito que quieres instalar este mes. Solo uno. Hazlo durante 21 días seguidos antes de agregar otro. La disciplina no es fuerza de voluntad — es diseño de rutinas.",
+  "Visión de negocio":"Lee los resultados financieros de tu empresa trimestralmente. Entiende cómo tu área contribuye a los números. Habla con tu jefe sobre el modelo de negocio y la estrategia.",
+  "Potencial de crecimiento":"Pide feedback radical de tu jefe sobre tu techo actual y qué necesitas para el siguiente nivel. El autoconocimiento es la base del crecimiento."
+};
+
+const COURSERA_MAP = {
+  "Influencia":["Influencing People · U. Michigan","Negotiation, Mediation & Conflict Resolution · ESSEC"],
+  "Liderazgo":["Leadership & Emotional Intelligence · ISB","Developing Leadership Skills · SFU"],
+  "Comunicación":["Business Communication · U. Colorado","Storytelling and influencing · Macquarie"],
+  "Innovación":["Innovation for Entrepreneurs · U. Maryland","Design Thinking · U. Virginia"],
+  "Pensamiento estratégico":["Business Strategy · U. Virginia","Strategic Leadership & Management · U. Illinois"],
+  "Planeación":["Project Management Principles · Google","Work Smarter, Not Harder · UC Irvine"],
+  "Negociación":["The Art of Negotiation · UC Irvine","Successful Negotiation · U. Michigan"],
+  "Adaptabilidad":["Adaptability and Resiliency · UC Davis","Learning How to Learn · UCSD"],
+  "Gestión del cambio":["Leading Organizational Change · Michigan","Change Management · ESADE"],
+  "Visión de negocio":["Business Metrics for Data-Driven Companies · Duke","Finance for Non-Finance Professionals · Rice"],
+  "default":["Foundations of Leadership · Google","Professional Development · UC Davis"]
+};
+
+const WPI_ICONOS = {
+  "Influencia":"💡","Determinación":"🔥","Autocontrol":"🧘","Tolerancia al estrés":"⚓",
+  "Liderazgo":"🚀","Orientación a resultados":"🎯","Pensamiento estratégico":"🔭","Comunicación":"🗣",
+  "Trabajo en equipo":"🤝","Toma de decisiones":"⚡","Adaptabilidad":"🌊","Innovación":"💎",
+  "Orientación al cliente":"❤️","Planeación":"📐","Negociación":"🤜","Gestión del cambio":"🔄",
+  "Compromiso":"🏅","Iniciativa":"⚡","Resiliencia":"🌱","Disciplina":"🎖",
+  "Visión de negocio":"🏆","Potencial de crecimiento":"🌟"
+};
+
+const WPI_VARS = ["Influencia","Determinación","Autocontrol","Tolerancia al estrés","Liderazgo","Orientación a resultados","Pensamiento estratégico","Comunicación","Trabajo en equipo","Toma de decisiones","Adaptabilidad","Innovación","Orientación al cliente","Planeación","Negociación","Gestión del cambio","Compromiso","Iniciativa","Resiliencia","Disciplina","Visión de negocio","Potencial de crecimiento"];
+
+const RACI_DATA = [
+  {act:"Definir objetivos del PDI",tipo:"meta",vals:["R","A","C","I","I"]},
+  {act:"70% — Acción 1",tipo:"70",vals:["R","A","C","R","I"]},
+  {act:"70% — Acción 2",tipo:"70",vals:["R","A","R","C","I"]},
+  {act:"70% — Acción 3",tipo:"70",vals:["R","A","C","R","I"]},
+  {act:"20% — Mentoring/coaching",tipo:"20",vals:["R","C","I","R","I"]},
+  {act:"20% — Feedback 360°",tipo:"20",vals:["C","A","R","C","I"]},
+  {act:"20% — Presentación/comunidad",tipo:"20",vals:["R","C","A","I","I"]},
+  {act:"10% — Coursera/formación",tipo:"10",vals:["R","I","A","I","I"]},
+  {act:"10% — Taller corporativo",tipo:"10",vals:["R","C","R","I","I"]},
+  {act:"10% — Aprendizaje técnico",tipo:"10",vals:["R","C","R","I","I"]},
+  {act:"Check-in trimestral",tipo:"seg",vals:["R","R","A","C","I"]},
+  {act:"Seguimiento y ajuste",tipo:"seg",vals:["R","R","A","C","I"]},
+  {act:"Validación y cierre",tipo:"seg",vals:["R","A","R","C","R"]},
+];
+const RACI_CYCLE=["R","A","C","I",""];
+
+const CRONOGRAMA_DATA = [
+  {label:"Proyecto estratégico",tipo:"70",resp:"Jefe directo",q:[1,1,0,0]},
+  {label:"Rotación / exposición",tipo:"70",resp:"RRHH + Jefe",q:[0,1,0,0]},
+  {label:"KPIs y resultados",tipo:"70",resp:"Titular",q:[1,1,1,1]},
+  {label:"Mentoring",tipo:"20",resp:"Mentor asignado",q:[1,1,0,0]},
+  {label:"Feedback 360°",tipo:"20",resp:"RRHH",q:[0,1,0,1]},
+  {label:"Presentaciones senior",tipo:"20",resp:"Jefe directo",q:[0,0,1,0]},
+  {label:"Curso Coursera",tipo:"10",resp:"Autónomo",q:[1,0,0,0]},
+  {label:"Taller corporativo",tipo:"10",resp:"Formación",q:[0,1,1,0]},
+  {label:"Aprendizaje técnico",tipo:"10",resp:"Líder técnico",q:[0,0,1,1]},
+];
+
+const ZONA_CONFIG = {
+  "Talento Alto Potencial":{col:"#3A7D1E",bg:"#EAF3DE",dot:"#3A7D1E",ruta:3,desc:"Eres talento de alto impacto. Estás en el radar de sucesión y listo para retos más grandes."},
+  "Colaborador Clave":{col:"#185FA5",bg:"#E6F1FB",dot:"#185FA5",ruta:3,desc:"Generás valor real y consistente. Tu próximo paso es aumentar tu visibilidad e impacto estratégico."},
+  "Destacado":{col:"#1B2A6B",bg:"#E8ECFB",dot:"#1B2A6B",ruta:3,desc:"Rendimiento sólido con alto potencial. El plan está diseñado para acelerar tu proyección."},
+  "Especialista":{col:"#534AB7",bg:"#EEEDFE",dot:"#534AB7",ruta:2,desc:"Excelencia técnica que es un activo para Italcol. El plan busca expandir tu influencia más allá de tu expertise."},
+  "En Desarrollo":{col:"#C8A800",bg:"#FFFBE6",dot:"#C8A800",ruta:2,desc:"Estás construyendo. Cada acción de este PDI es un ladrillo en tu crecimiento."},
+  "Evaluar Rol":{col:"#C8A800",bg:"#FFFBE6",dot:"#C8A800",ruta:1,desc:"Hay una oportunidad de encontrar el mejor escenario para que brilles. El plan te ayuda a clarificar ese camino."},
+  "Colaborador Efectivo":{col:"#E8631A",bg:"#FEF0E6",dot:"#E8631A",ruta:1,desc:"Experiencia valiosa que el plan busca convertir en mayor impacto y visibilidad."},
+  "Plan de Acción":{col:"#E8631A",bg:"#FEF0E6",dot:"#E8631A",ruta:1,desc:"El plan está diseñado para estabilizar, motivar y generar momentum. Cada pequeño logro cuenta."},
+  "En Riesgo":{col:"#A32D2D",bg:"#FCEBEB",dot:"#A32D2D",ruta:1,desc:"Este PDI es una oportunidad real de cambiar la trayectoria. Arranquemos con claridad y compromiso."}
+};
+
+// ── STATE ──────────────────────────────────────────────────────────
+let persona = null;
+let empresaActual = "italcol";
+let rutaSeleccionada = 3;
+let veredictoSeleccionado = null;
+let brechasSeleccionadas = [];
+let bitacoraEntradas = [];
+let currentWPIVar = null;
+
+// ── INIT ───────────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', () => {
+  const params = new URLSearchParams(window.location.search);
+  const nombreParam = params.get('nombre');
+  const empresaParam = params.get('empresa') || 'italcol';
+  if (nombreParam) {
+    empresaActual = empresaParam;
+    const todas = PERSONAS[empresaActual] || [];
+    persona = todas.find(p => p.nombre === decodeURIComponent(nombreParam));
+    if (!persona) {
+      for (const emp of ['italcol','italfoods','regional']) {
+        persona = PERSONAS[emp].find(p => p.nombre === decodeURIComponent(nombreParam));
+        if (persona) { empresaActual = emp; break; }
+      }
+    }
+    if (persona) { cargarPersona(persona, empresaActual); return; }
+  }
+  const activo = localStorage.getItem('italcol_persona_activa');
+  if (activo) {
+    try {
+      const d = JSON.parse(activo);
+      empresaActual = d.empresa || 'italcol';
+      persona = PERSONAS[empresaActual]?.find(p => p.nombre === d.nombre);
+      if (persona) { cargarPersona(persona, empresaActual); return; }
+    } catch(e) {}
+  }
+  mostrarSelector();
+});
+
+function mostrarSelector() {
+  document.getElementById('selector-wrap').style.display = 'block';
+  filtrarPersonas();
+}
+
+function filtrarPersonas() {
+  const emp = document.getElementById('sel-empresa').value;
+  const sel = document.getElementById('sel-persona');
+  sel.innerHTML = '<option value="">— Selecciona —</option>';
+  (PERSONAS[emp] || []).forEach((p, i) => {
+    const opt = document.createElement('option');
+    opt.value = i; opt.textContent = p.nombre + (p.cargo ? ' — ' + p.cargo : '');
+    sel.appendChild(opt);
+  });
+}
+
+function cargarPersonaDesdeSelector() {
+  const emp = document.getElementById('sel-empresa').value;
+  const idx = parseInt(document.getElementById('sel-persona').value);
+  if (isNaN(idx)) return;
+  persona = PERSONAS[emp][idx];
+  empresaActual = emp;
+  document.getElementById('selector-wrap').style.display = 'none';
+  cargarPersona(persona, emp);
+}
+
+function cargarPersona(p, empresa) {
+  persona = p; empresaActual = empresa;
+  const ini = p.nombre.split(' ').slice(0,2).map(w => w[0]).join('').toUpperCase();
+  const zc = ZONA_CONFIG[p.zona] || ZONA_CONFIG['Colaborador Clave'];
+
+  // Header
+  document.getElementById('h-avatar').textContent = ini;
+  document.getElementById('h-zona-dot').style.background = zc.dot;
+  document.getElementById('h-nombre').textContent = p.nombre;
+  document.getElementById('h-sub').textContent = (p.cargo || 'Líder') + ' · ' + empresa;
+  document.getElementById('sm-pot').textContent = p.pot || '—';
+  document.getElementById('sm-zona').textContent = p.zona;
+
+  // Tags
+  const tagsEl = document.getElementById('h-tags');
+  tagsEl.innerHTML = '';
+  const ruta = getRutaLabel(zc.ruta);
+  tagsEl.innerHTML = `<span class="htag htag-ruta">Ruta ${zc.ruta} — ${ruta}</span><span class="htag htag-zona">${p.zona}</span>${p.es_sucesor?'<span class="htag htag-suc">Sucesor</span>':''}`;
+
+  // Campos formulario
+  document.getElementById('d-nombre').value = p.nombre;
+  document.getElementById('d-cargo').value = p.cargo || 'Líder';
+  document.getElementById('d-empresa').value = empresa;
+  document.getElementById('d-pot').textContent = p.pot || '—';
+
+  // Zona card
+  document.getElementById('zona-badge').textContent = p.zona;
+  document.getElementById('zona-badge').style.background = zc.bg;
+  document.getElementById('zona-badge').style.color = zc.col;
+  document.getElementById('zona-desc').textContent = zc.desc;
+
+  // Ruta seleccionada
+  selectRuta(zc.ruta, false);
+
+  // Chips WPI
+  buildWpiChips(p);
+
+  // Coursera
+  buildCourseraSugeridos(p);
+
+  // Cronograma y RACI
+  buildCronograma();
+  buildRaci();
+
+  // Bitácora
+  renderBitacora();
+
+  // Cargar guardado previo
+  cargarPDIGuardado(p.nombre);
+
+  // Calcular
+  calcAvance();
+  calcDias();
+}
+
+function getRutaLabel(r) {
+  return {1:'Con Oportunidad',2:'Fortalecimiento',3:'Top Talent',4:'Sucesor'}[r] || '';
+}
+
+// ── WPI CHIPS (SUPERPODERES) ───────────────────────────────────────
+function buildWpiChips(p) {
+  const cont = document.getElementById('wpi-chips');
+  cont.innerHTML = '';
+  const allVals = WPI_VARS.map(v => ({
+    v, val: p[v.toLowerCase().replace(/ /g,'_')] || (p.dummy ? 5 : Math.floor(4 + Math.random()*5))
+  })).sort((a,b) => b.val - a.val); // ordenar de mayor a menor
+
+  allVals.forEach(({v, val}) => {
+    const isHigh = val >= 8;
+    const isMid = val >= 6 && val < 8;
+    const card = document.createElement('div');
+    card.className = 'comp-card' + (isHigh ? ' high' : '');
+    card.setAttribute('data-var', v);
+    card.setAttribute('data-val', val);
+
+    const barColor = isHigh ? '#3A7D1E' : isMid ? '#E8631A' : '#B71C1C';
+    const valColor = isHigh ? '#27500A' : isMid ? '#7B3A0A' : '#7B1C1C';
+
+    card.innerHTML = `
+      <div style="position:absolute;top:8px;right:8px;font-size:9px;font-weight:700;padding:1px 6px;border-radius:40px;background:${isHigh?'#EAF3DE':isMid?'#FEF0E6':'#FFEBEE'};color:${valColor}">${isHigh?'Superpoder':isMid?'En crecimiento':'A desarrollar'}</div>
+      <div class="comp-icon">${WPI_ICONOS[v]||'⭐'}</div>
+      <div class="comp-name">${v}</div>
+      <div class="comp-val" style="color:${valColor}">${val}<span style="font-size:12px;font-weight:400;color:var(--muted)">/10</span></div>
+      <div class="comp-bar"><div class="comp-bar-fill" style="width:${val*10}%;background:${barColor}"></div></div>`;
+
+    card.onclick = () => showWPIPanel(v, val, card);
+    cont.appendChild(card);
+    if(val >= 8) brechasSeleccionadas = brechasSeleccionadas.filter(x => x !== v);
+    else if(!brechasSeleccionadas.includes(v) && val < 7) brechasSeleccionadas.push(v);
+  });
+}
+
+function showWPIPanel(v, val, card) {
+  const panel = document.getElementById('wpi-panel');
+  const isHigh = val >= 8; const isMid = val >= 6 && val < 8;
+  const color = isHigh ? '#27500A' : isMid ? '#7B3A0A' : '#7B1C1C';
+  const bg = isHigh ? '#EAF3DE' : isMid ? '#FEF0E6' : '#FFEBEE';
+  const border = isHigh ? '#3A7D1E' : isMid ? '#E8631A' : '#B71C1C';
+
+  // Toggle
+  if (currentWPIVar === v) {
+    panel.style.display = 'none'; currentWPIVar = null;
+    document.querySelectorAll('.comp-card').forEach(c => c.classList.remove('selected'));
+    return;
+  }
+  currentWPIVar = v;
+  document.querySelectorAll('.comp-card').forEach(c => c.classList.remove('selected'));
+  card.classList.add('selected');
+
+  const desc = WPI_DESC[v] || '';
+  const como = WPI_COMO_POTENCIAR[v] || '';
+
+  panel.style.background = bg;
+  panel.style.borderColor = border;
+  panel.style.display = 'block';
+  panel.innerHTML = `
+    <div style="display:flex;align-items:flex-start;gap:12px">
+      <div style="font-size:28px;flex-shrink:0">${WPI_ICONOS[v]||'⭐'}</div>
+      <div style="flex:1">
+        <div style="font-size:13px;font-weight:700;color:${color};margin-bottom:4px">${v} — ${val}/10</div>
+        <div style="font-size:11px;color:${color};line-height:1.6;margin-bottom:10px">${desc}</div>
+        <div style="background:rgba(255,255,255,.7);border-radius:8px;padding:10px 12px">
+          <div style="font-size:10px;font-weight:700;color:${border};text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">${isHigh?'Cómo potenciar esta fortaleza':'Cómo potenciar esta competencia'}</div>
+          <div style="font-size:11px;color:${color};line-height:1.7">${como}</div>
+        </div>
+      </div>
+      <button onclick="document.getElementById('wpi-panel').style.display='none';currentWPIVar=null;document.querySelectorAll('.comp-card').forEach(c=>c.classList.remove('selected'))" style="background:none;border:none;font-size:18px;cursor:pointer;color:${color};flex-shrink:0">×</button>
+    </div>`;
+
+  panel.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+// ── COURSERA ───────────────────────────────────────────────────────
+function buildCourseraSugeridos(p) {
+  ['coursera-sugeridos','coursera-sugeridos-plan'].forEach(id => {
+    const cont = document.getElementById(id);
+    if(!cont) return;
+    cont.innerHTML = '';
+    if(!brechasSeleccionadas.length) return;
+    const topBrechas = brechasSeleccionadas.slice(0,2);
+    const titulo = document.createElement('div');
+    titulo.style.cssText = 'font-size:11px;font-weight:600;color:var(--muted);margin-bottom:6px';
+    titulo.textContent = 'Cursos Coursera sugeridos según tus oportunidades de crecimiento';
+    cont.appendChild(titulo);
+    topBrechas.forEach(b => {
+      const cursos = COURSERA_MAP[b] || COURSERA_MAP['default'];
+      cursos.forEach(c => {
+        const a = document.createElement('a');
+        a.href = '#'; a.className = 'coursera-card';
+        a.innerHTML = `<div class="cc-ico">C</div><div><div class="cc-title">${c}</div><div class="cc-meta">Coursera · Competencia: ${b}</div></div>`;
+        cont.appendChild(a);
+      });
+    });
+  });
+}
+
+// ── RUTA ───────────────────────────────────────────────────────────
+function selectRuta(n, animate=true) {
+  rutaSeleccionada = n;
+  document.querySelectorAll('.rcard').forEach(c => c.classList.remove('sel'));
+  const sel = document.querySelector(`.rcard[data-ruta="${n}"]`);
+  if(sel) sel.classList.add('sel');
+  document.getElementById('h-nivel').textContent = `Ruta ${n} · ${getRutaLabel(n)}`;
+
+  const rutaInfo = {
+    1:{color:'#B91C1C',bg:'#FEF2F2',border:'#FCA5A5',label:'Talento con Oportunidad',
+       desc:'El plan se enfoca en estabilizar tu desempeño y construir bases sólidas. Cada logro, por pequeño que sea, cuenta y se registra.',
+       accion:'Estrategia de retención + plan de desarrollo complementario al cargo con foco en liderazgo'},
+    2:{color:'#E8631A',bg:'#FEF0E6',border:'#FCA87B',label:'Talento en Fortalecimiento',
+       desc:'Tienes una base sólida. El plan busca ampliar tu perspectiva con nuevas experiencias, movilidad y retos que aceleren tu crecimiento.',
+       accion:'Movilidad horizontal + rotación + nuevos proyectos de impacto'},
+    3:{color:'#1B2A6B',bg:'#E8ECFB',border:'#93A5DC',label:'Top Talent',
+       desc:'Estás en el radar de sucesión de Italcol. El plan acelera tu exposición a la alta dirección y consolida tu candidatura.',
+       accion:'Incorporación al plan de sucesión + mentoring directivo + proyectos estratégicos'},
+    4:{color:'#2D7D32',bg:'#EAF3DE',border:'#86C57B',label:'Sucesor',
+       desc:'Ya demostraste que estás listo. El plan te prepara para asumir posiciones clave con la menor fricción posible.',
+       accion:'Preparación inmediata + mentoring directivo + exposición ejecutiva'}
+  };
+  const info = rutaInfo[n];
+  const banner = document.getElementById('ruta-banner');
+  if(banner && info) {
+    banner.style.display = 'block';
+    banner.style.background = info.bg;
+    banner.style.borderLeftColor = info.color;
+    banner.innerHTML = `
+      <div class="rb-title" style="color:${info.color}">Ruta ${n} — ${info.label}</div>
+      <div class="rb-desc" style="color:${info.color};opacity:.85">${info.desc}</div>
+      <div class="rb-action" style="background:${info.color}18;color:${info.color}">Acción requerida: ${info.accion}</div>`;
+  }
+  if(animate) document.getElementById('h-nivel') && (document.getElementById('h-nivel').textContent = `Ruta ${n} · ${getRutaLabel(n)}`);
+}
+
+// ── CRONOGRAMA ─────────────────────────────────────────────────────
+function buildCronograma() {
+  const body = document.getElementById('tl-body');
+  if(!body) return;
+  body.innerHTML = '';
+  const colors = {'70':'#1B2A6B','20':'#E8631A','10':'#2D7D32'};
+  const tipoBg = {'70':'#E8ECFB','20':'#FEF0E6','10':'#EAF3DE','seg':'#F3F4F6'};
+  CRONOGRAMA_DATA.forEach((row, ri) => {
+    const div = document.createElement('div');
+    div.style.cssText = `display:grid;grid-template-columns:180px repeat(4,1fr) 110px;border-bottom:1px solid var(--bd)`;
+    const labelDiv = document.createElement('div');
+    labelDiv.style.cssText = `padding:8px 10px;font-size:11px;font-weight:500;display:flex;align-items:center;gap:6px;background:${tipoBg[row.tipo]||'#fff'}`;
+    const typeDot = document.createElement('span');
+    typeDot.style.cssText = `width:8px;height:8px;border-radius:50%;background:${colors[row.tipo]||'#6B7280'};flex-shrink:0`;
+    labelDiv.appendChild(typeDot);
+    labelDiv.appendChild(document.createTextNode(row.label));
+    div.appendChild(labelDiv);
+    row.q.forEach((v, qi) => {
+      const cell = document.createElement('div');
+      cell.style.cssText = `border-left:1px solid var(--bd);display:flex;align-items:center;justify-content:center;cursor:pointer;min-height:36px;transition:background .15s;background:${v?colors[row.tipo]:'transparent'}`;
+      if(v) { const dot = document.createElement('div'); dot.style.cssText='width:10px;height:10px;border-radius:50%;background:#fff'; cell.appendChild(dot); }
+      cell.addEventListener('mouseover', () => { if(!row.q[qi]) cell.style.background='#F0F4FF'; });
+      cell.addEventListener('mouseout', () => { cell.style.background = row.q[qi]?colors[row.tipo]:'transparent'; });
+      cell.onclick = () => { CRONOGRAMA_DATA[ri].q[qi] = v ? 0 : 1; buildCronograma(); };
+      div.appendChild(cell);
+    });
+    const resp = document.createElement('div');
+    resp.style.cssText = 'padding:6px 8px;font-size:10px;color:var(--muted);border-left:1px solid var(--bd);display:flex;align-items:center';
+    resp.textContent = row.resp;
+    div.appendChild(resp);
+    body.appendChild(div);
+  });
+  // Marcar Q actual
+  const q = Math.ceil((new Date().getMonth()+1)/3);
+  ['tl-q1','tl-q2','tl-q3','tl-q4'].forEach((id, i) => {
+    const el = document.getElementById(id);
+    if(!el) return;
+    if(i+1 === q) { el.style.background='var(--orange)'; el.style.color='#fff'; }
+    else { el.style.background='var(--nl)'; el.style.color='var(--navy)'; }
+  });
+}
+
+// ── RACI ───────────────────────────────────────────────────────────
+function buildRaci() {
+  const body = document.getElementById('raci-body');
+  if(!body) return;
+  body.innerHTML = '';
+  const tipoBg = {'70':'#E8ECFB','20':'#FEF0E6','10':'#EAF3DE','meta':'#F3F4F6','seg':'#EEF2FF'};
+  const tipoCol = {'70':'#1B2A6B','20':'#E8631A','10':'#2D7D32','meta':'#6B7280','seg':'#4338CA'};
+  const tipoTag = {'70':'70%','20':'20%','10':'10%','meta':'META','seg':'SEG'};
+  const pill = {R:'rR',A:'rA',C:'rC',I:'rI','':'re'};
+  RACI_DATA.forEach((row, ri) => {
+    const tr = document.createElement('tr');
+    const bg = tipoBg[row.tipo]||'#fff'; const col = tipoCol[row.tipo]||'#6B7280';
+    const tag = tipoTag[row.tipo]||'';
+    let h = `<td style="background:${bg};font-size:11px;font-weight:500;padding:7px 10px">
+      ${tag?`<span style="font-size:9px;font-weight:700;padding:1px 6px;border-radius:40px;background:${col}22;color:${col};margin-right:5px">${tag}</span>`:''}${row.act}</td>`;
+    row.vals.forEach((v, vi) => {
+      h += `<td style="padding:6px"><span class="rpill ${pill[v]||'re'}" onclick="cycleRaci(${ri},${vi})">${v||'—'}</span></td>`;
+    });
+    tr.innerHTML = h;
+    body.appendChild(tr);
+  });
+}
+function cycleRaci(ri, vi) {
+  const cur = RACI_CYCLE.indexOf(RACI_DATA[ri].vals[vi]);
+  RACI_DATA[ri].vals[vi] = RACI_CYCLE[(cur+1) % RACI_CYCLE.length];
+  buildRaci();
+}
+
+// ── BITÁCORA ───────────────────────────────────────────────────────
+function renderBitacora() {
+  const list = document.getElementById('bitacora-list');
+  if(!list) return;
+  list.innerHTML = '';
+  if(bitacoraEntradas.length === 0) {
+    list.innerHTML = `<div style="font-size:12px;color:var(--muted);padding:12px 0">Aún no hay entradas. Registra tu primera sesión de seguimiento.</div>`;
+    return;
+  }
+  bitacoraEntradas.slice().reverse().forEach((e, i) => {
+    const div = document.createElement('div');
+    div.className = 'bitacora-entry';
+    div.innerHTML = `
+      <div class="bit-line"><div class="bit-dot"></div>${i<bitacoraEntradas.length-1?'<div class="bit-track"></div>':''}</div>
+      <div class="bit-content">
+        <div class="bit-fecha">${e.fecha}</div>
+        <textarea class="finput" rows="3" style="font-size:12px;margin-top:4px" oninput="updateBitacora(${bitacoraEntradas.length-1-i},this.value)" placeholder="¿Qué avanzaste? ¿Qué aprendiste? ¿Qué ajuste necesitas hacer?">${e.texto}</textarea>
+      </div>`;
+    list.appendChild(div);
+  });
+}
+
+function addEntradaBitacora() {
+  const fecha = document.getElementById('bit-fecha').value;
+  if(!fecha) { showToast('Selecciona una fecha para la entrada'); return; }
+  bitacoraEntradas.push({fecha: new Date(fecha+'T12:00').toLocaleDateString('es-CO',{day:'2-digit',month:'short',year:'numeric'}), texto:''});
+  renderBitacora();
+}
+
+function updateBitacora(idx, val) {
+  if(bitacoraEntradas[idx]) bitacoraEntradas[idx].texto = val;
+}
+
+// ── PROGRESO ───────────────────────────────────────────────────────
+function checkDone(chk, lblId) {
+  const lbl = document.getElementById(lblId);
+  if(chk.checked) { lbl.classList.add('done'); lbl.innerHTML = lbl.innerHTML.replace('Completada','Completada'); }
+  else { lbl.classList.remove('done'); lbl.innerHTML = lbl.innerHTML.replace('Completada','Completada'); }
+}
+
+function calcAvance() {
+  const ids = ['chk70-1','chk70-2','chk70-3','chk20-1','chk20-2','chk20-3','chk10-1','chk10-2','chk10-3'];
+  const done = ids.filter(id => document.getElementById(id)?.checked).length;
+  const pct = Math.round(done / ids.length * 100);
+  document.getElementById('sm-avance').textContent = pct + '%';
+  document.getElementById('sm-acts').textContent = `${done}/9`;
+  document.getElementById('k-acts').textContent = `${done}/9`;
+
+  // Estado emocional
+  const estado = document.getElementById('estado-pdi');
+  const etit = document.getElementById('estado-titulo');
+  const edesc = document.getElementById('estado-desc');
+  const eemoji = document.getElementById('estado-emoji');
+  if(pct >= 80) {
+    estado.style.borderLeftColor='var(--green)';
+    eemoji.textContent='🏆'; etit.style.color='var(--green)';
+    etit.textContent='Avance destacado — cierre próximo';
+    edesc.textContent=`${done} de 9 actividades completadas. El colaborador está en condiciones de formalizar el cierre.`;
+    document.getElementById('celebracion').style.display='block';
+  } else if(pct >= 50) {
+    estado.style.borderLeftColor='var(--orange)';
+    eemoji.textContent='🚀'; etit.style.color='var(--orange)';
+    etit.textContent='Avance sostenido — en línea con el plan';
+    edesc.textContent=`${done} de 9 actividades completadas. El ritmo de avance es adecuado.`;
+  } else if(pct > 0) {
+    estado.style.borderLeftColor='var(--navy)';
+    eemoji.textContent='📋'; etit.style.color='var(--navy)';
+    etit.textContent='PDI activo — en ejecución';
+    edesc.textContent=`${done} de 9 actividades completadas. ¡Cada acción cuenta!`;
+  } else {
+    etit.textContent='PDI activo — inicio pendiente';
+    edesc.textContent='Inicie por el 70% — el desarrollo más efectivo ocurre en la acción y la práctica.';
+  }
+
+  // KPIs coloreados
+  const kpiAvance = document.getElementById('kpi-avance');
+  document.getElementById('k-avance').textContent = pct + '%';
+  kpiAvance.className = 'kpi' + (pct >= 80 ? ' good' : pct === 0 ? '' : '');
+}
+
+function updateProg(dim, val) {
+  const v = parseInt(val);
+  document.getElementById('pb'+dim).style.width = v+'%';
+  document.getElementById('pv'+dim).textContent = v+'%';
+  const v70 = parseInt(document.getElementById('pb70').style.width)||0;
+  const v20 = parseInt(document.getElementById('pb20').style.width)||0;
+  const v10 = parseInt(document.getElementById('pb10').style.width)||0;
+  const total = Math.round(v70*0.7 + v20*0.2 + v10*0.1);
+  document.getElementById('k-avance').textContent = total+'%';
+  document.getElementById('sm-avance').textContent = total+'%';
+}
+
+function calcDias() {
+  const fin = document.getElementById('d-fin').value;
+  if(!fin) { document.getElementById('k-dias').textContent='—'; document.getElementById('sm-dias').textContent='—'; return; }
+  const diff = Math.ceil((new Date(fin+'-01') - new Date()) / (1000*60*60*24));
+  const txt = diff > 0 ? diff+'d' : 'Vencido';
+  document.getElementById('k-dias').textContent = txt;
+  document.getElementById('sm-dias').textContent = txt;
+  const kpiDias = document.getElementById('kpi-dias');
+  kpiDias.className = 'kpi' + (diff < 30 && diff > 0 ? ' alert' : diff <= 0 ? ' alert' : diff > 90 ? ' good' : '');
+}
+document.addEventListener('change', e => { if(e.target.id === 'd-fin') calcDias(); });
+
+// ── TABS ───────────────────────────────────────────────────────────
+function showTab(id, idx) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('visible'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('visible');
+  document.querySelectorAll('.tab')[idx].classList.add('active');
+  // Highlight status bar
+  document.querySelectorAll('.status-item').forEach(s => s.classList.remove('active'));
+  if(idx === 0 || idx === 4) document.querySelectorAll('.status-item')[idx === 0 ? 0 : 1]?.classList.add('active');
+  if(id === 'ninebox') document.getElementById('k-ninebox').textContent = persona?.zona || '—';
+}
+
+// ── VEREDICTO ──────────────────────────────────────────────────────
+function selectVeredicto(el, val) {
+  veredictoSeleccionado = val;
+  document.querySelectorAll('.vcard').forEach(c => c.classList.remove('sel'));
+  el.classList.add('sel');
+}
+
+// ── GUARDAR BLOQUE ─────────────────────────────────────────────────
+function guardarBloque(tipo) {
+  const key = `italcol_pdi_${persona?.nombre || 'draft'}`;
+  try {
+    const existing = JSON.parse(localStorage.getItem(key) || '{}');
+    if(!existing.acts) existing.acts = {};
+    ['1','2','3'].forEach(n => {
+      const el = document.getElementById(`act${tipo}-${n}`);
+      const chk = document.getElementById(`chk${tipo}-${n}`);
+      if(el) existing.acts[`${tipo}-${n}`] = el.value || '';
+      if(chk) existing.acts[`chk${tipo}-${n}`] = chk.checked;
+    });
+    existing.nombre = persona?.nombre; existing.empresa = empresaActual; existing.ts = Date.now();
+    localStorage.setItem(key, JSON.stringify(existing));
+    showToast('Acciones ' + tipo + '% guardadas');
+  } catch(e) { showToast('Error al guardar'); }
+}
+
+// ── GUARDAR PDI ────────────────────────────────────────────────────
+function getPDIData() {
+  const acts = {};
+  ['70','20','10'].forEach(dim => ['1','2','3'].forEach(n => {
+    const el = document.getElementById(`act${dim}-${n}`);
+    const chk = document.getElementById(`chk${dim}-${n}`);
+    acts[`${dim}-${n}`] = el?.value || '';
+    acts[`chk${dim}-${n}`] = chk?.checked || false;
+  }));
+  return {
+    nombre: document.getElementById('d-nombre')?.value || '',
+    empresa: empresaActual,
+    jefe: document.getElementById('d-jefe')?.value || '',
+    sucesion: document.getElementById('d-sucesion')?.value || '',
+    inicio: document.getElementById('d-inicio')?.value || '',
+    fin: document.getElementById('d-fin')?.value || '',
+    ruta: rutaSeleccionada,
+    brechas: brechasSeleccionadas,
+    fortalezas: document.getElementById('d-fortalezas')?.value || '',
+    oportunidades: document.getElementById('d-oportunidades')?.value || '',
+    segundo_de: document.getElementById('d-segundo-de')?.value || '',
+    tiene_segundo: document.getElementById('d-tiene-segundo')?.value || '',
+    veredicto_suc: document.getElementById('d-veredicto-suc')?.value || '',
+    acts,
+    prog_70: document.getElementById('pv70')?.textContent || '0%',
+    prog_20: document.getElementById('pv20')?.textContent || '0%',
+    prog_10: document.getElementById('pv10')?.textContent || '0%',
+    bitacora: bitacoraEntradas,
+    seg_evidencias: document.getElementById('seg-evidencias')?.value || '',
+    aprendizajes: document.getElementById('c-aprendizajes')?.value || '',
+    logros: document.getElementById('c-logros')?.value || '',
+    veredicto: veredictoSeleccionado,
+    compromisos_prox: document.getElementById('c-compromisos-prox')?.value || '',
+    firma_colaborador: document.getElementById('firma-colaborador')?.value || '',
+    firma_jefe: document.getElementById('firma-jefe')?.value || '',
+    firma_rrhh: document.getElementById('firma-rrhh')?.value || '',
+    raci: RACI_DATA.map(r => ({act:r.act, vals:r.vals.slice()})),
+    cronograma: CRONOGRAMA_DATA.map(r => ({label:r.label, q:r.q.slice()})),
+    saved_at: new Date().toISOString()
+  };
+}
+
+function guardarPDI() {
+  const nombre = document.getElementById('d-nombre').value;
+  if(!nombre || nombre === 'Selecciona un colaborador') { showToast('Selecciona un colaborador primero'); return; }
+  const data = getPDIData();
+  localStorage.setItem(`italcol_pdi_${nombre}`, JSON.stringify(data));
+  const resumen = {nombre, empresa:empresaActual, ruta:rutaSeleccionada,
+    avance: document.getElementById('k-avance').textContent,
+    veredicto: veredictoSeleccionado, saved_at: data.saved_at};
+  localStorage.setItem(`italcol_pdi_resumen_${nombre}`, JSON.stringify(resumen));
+  try {
+    const idx = JSON.parse(localStorage.getItem('italcol_pdi_index')||'[]');
+    const ei = idx.findIndex(x => x.nombre === nombre);
+    if(ei >= 0) idx[ei] = resumen; else idx.push(resumen);
+    localStorage.setItem('italcol_pdi_index', JSON.stringify(idx));
+  } catch(e){}
+  syncToExcel({tabla:'pdi',nombre,empresa:empresaActual,
+    fecha:new Date().toISOString().split('T')[0],ruta:String(rutaSeleccionada),
+    brechas:brechasSeleccionadas.join(','),
+    fortalezas:document.getElementById('d-fortalezas')?.value||'',
+    act70_1:data.acts['70-1'],act70_2:data.acts['70-2'],act70_3:data.acts['70-3'],
+    act20_1:data.acts['20-1'],act20_2:data.acts['20-2'],act20_3:data.acts['20-3'],
+    act10_1:data.acts['10-1'],act10_2:data.acts['10-2'],act10_3:data.acts['10-3'],
+    avance:document.getElementById('k-avance').textContent,
+    veredicto_jefe:veredictoSeleccionado||'',
+    jefe:document.getElementById('d-jefe')?.value||'',
+    vigencia_inicio:document.getElementById('d-inicio')?.value||'',
+    vigencia_fin:document.getElementById('d-fin')?.value||''
+  }).then(ok => showToast(ok?'PDI guardado y sincronizado con Excel Italcol':'PDI guardado localmente'));
+}
+
+function cargarPDIGuardado(nombre) {
+  try {
+    const saved = localStorage.getItem(`italcol_pdi_${nombre}`);
+    if(!saved) return;
+    const d = JSON.parse(saved);
+    if(d.jefe) document.getElementById('d-jefe').value = d.jefe;
+    if(d.sucesion) document.getElementById('d-sucesion').value = d.sucesion;
+    if(d.inicio) document.getElementById('d-inicio').value = d.inicio;
+    if(d.fin) document.getElementById('d-fin').value = d.fin;
+    if(d.fortalezas) document.getElementById('d-fortalezas').value = d.fortalezas;
+    if(d.oportunidades) document.getElementById('d-oportunidades').value = d.oportunidades;
+    if(d.segundo_de) document.getElementById('d-segundo-de').value = d.segundo_de;
+    if(d.tiene_segundo) document.getElementById('d-tiene-segundo').value = d.tiene_segundo;
+    if(d.veredicto_suc) document.getElementById('d-veredicto-suc').value = d.veredicto_suc;
+    if(d.ruta) selectRuta(d.ruta);
+    if(d.brechas) brechasSeleccionadas = d.brechas;
+    if(d.acts) Object.keys(d.acts).forEach(k => {
+      const el = document.getElementById('act'+k);
+      if(el) el.value = d.acts[k];
+      if(k.startsWith('chk')) { const chkEl = document.getElementById(k); if(chkEl) chkEl.checked = d.acts[k]; }
+    });
+    if(d.bitacora) { bitacoraEntradas = d.bitacora; renderBitacora(); }
+    if(d.seg_evidencias) document.getElementById('seg-evidencias').value = d.seg_evidencias;
+    if(d.aprendizajes) document.getElementById('c-aprendizajes').value = d.aprendizajes;
+    if(d.logros) document.getElementById('c-logros').value = d.logros;
+    if(d.compromisos_prox) document.getElementById('c-compromisos-prox').value = d.compromisos_prox;
+    if(d.firma_colaborador) document.getElementById('firma-colaborador').value = d.firma_colaborador;
+    if(d.firma_jefe) document.getElementById('firma-jefe').value = d.firma_jefe;
+    if(d.firma_rrhh) document.getElementById('firma-rrhh').value = d.firma_rrhh;
+    if(d.prog_70) { const s=parseInt(d.prog_70); document.getElementById('pb70').style.width=s+'%'; document.getElementById('pv70').textContent=d.prog_70; }
+    if(d.prog_20) { const s=parseInt(d.prog_20); document.getElementById('pb20').style.width=s+'%'; document.getElementById('pv20').textContent=d.prog_20; }
+    if(d.prog_10) { const s=parseInt(d.prog_10); document.getElementById('pb10').style.width=s+'%'; document.getElementById('pv10').textContent=d.prog_10; }
+    if(d.raci) d.raci.forEach((r,i) => { if(RACI_DATA[i]) RACI_DATA[i].vals = r.vals; });
+    if(d.cronograma) d.cronograma.forEach((r,i) => { if(CRONOGRAMA_DATA[i]) CRONOGRAMA_DATA[i].q = r.q; });
+    if(d.veredicto) {
+      veredictoSeleccionado = d.veredicto;
+      const vmap = {sucesor:0,continua:1,replantear:2,evaluar:3};
+      const cards = document.querySelectorAll('.vcard');
+      if(cards[vmap[d.veredicto]]) cards[vmap[d.veredicto]].classList.add('sel');
+    }
+    buildCronograma(); buildRaci(); calcAvance();
+    const v70=parseInt(d.prog_70)||0, v20=parseInt(d.prog_20)||0, v10=parseInt(d.prog_10)||0;
+    const total = Math.round(v70*.7+v20*.2+v10*.1);
+    document.getElementById('k-avance').textContent = total+'%';
+    document.getElementById('sm-avance').textContent = total+'%';
+    document.getElementById('h-vigencia').textContent = `PDI ${d.inicio||'2025'} → ${d.fin||'2026'}`;
+    calcDias();
+    // Estado de la persona
+    updateEstadoMsg(total);
+  } catch(e){ console.warn('No se pudo cargar PDI:', e); }
+}
+
+function updateEstadoMsg(pct) {
+  const msg = document.getElementById('h-status-msg');
+  if(!msg) return;
+  if(pct >= 80) msg.textContent = 'Avance destacado. El cierre está próximo.';
+  else if(pct >= 50) msg.textContent = 'Avance sostenido. En línea con el cronograma.';
+  else if(pct > 0) msg.textContent = 'PDI en ejecución.';
+  else msg.textContent = 'PDI activo. Inicio pendiente.';
+}
+
+// ── EXPORTAR WORD ──────────────────────────────────────────────────
+function exportarPDIWord() {
+  const nombre = document.getElementById('d-nombre').value;
+  const data = getPDIData();
+  const fecha = new Date().toLocaleDateString('es-CO');
+  const rutaLabel = getRutaLabel(data.ruta);
+  const rColors = {1:'#B91C1C',2:'#E8631A',3:'#1B2A6B',4:'#2D7D32'};
+  const rColor = rColors[data.ruta]||'#1B2A6B';
+  const acts = data.acts || {};
+
+  const html = `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"/>
+<title>PDI — ${nombre}</title>
+<style>
+body{font-family:'Segoe UI',Arial,sans-serif;max-width:800px;margin:0 auto;padding:32px;color:#1A1A2E;font-size:13px;line-height:1.6}
+.cover{background:linear-gradient(135deg,#1B2A6B,#2A3F9B);color:#fff;border-radius:12px;padding:32px;margin-bottom:28px}
+.cover h1{font-size:22px;margin:0 0 4px}
+.cover p{opacity:.8;margin:0 0 12px;font-size:12px}
+.badge{display:inline-block;padding:5px 16px;border-radius:40px;font-size:11px;font-weight:700;background:${rColor};color:#fff;margin-top:6px}
+.section{margin-bottom:24px}
+.sec-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:#6B7280;border-bottom:2px solid #E5E7EB;padding-bottom:5px;margin-bottom:14px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.field{background:#F7F8FC;border:1px solid #E0E4F0;border-radius:6px;padding:9px 12px}
+.field label{font-size:10px;font-weight:700;text-transform:uppercase;color:#6B7280;display:block;margin-bottom:2px}
+.field span{font-size:13px;font-weight:600;color:#1B2A6B}
+.act{border-left:4px solid #1B2A6B;padding:9px 14px;margin-bottom:8px;background:#F7F8FC;border-radius:0 7px 7px 0}
+.act.b20{border-left-color:#E8631A}.act.b10{border-left-color:#2D7D32}
+.act-num{font-size:10px;font-weight:700;color:#6B7280;margin-bottom:2px}
+.act-text{font-size:12px;color:#1A1A2E}
+.tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:4px}
+.tag{font-size:10px;padding:2px 8px;border-radius:40px;background:#FFEBEE;color:#991B1B;font-weight:600}
+.ruta-banner{padding:12px 16px;border-radius:8px;margin-bottom:16px;border-left:5px solid ${rColor};background:${rColor}11}
+.firma-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:14px}
+.firma-box{border-top:1.5px solid #1B2A6B;padding-top:6px;font-size:10px;color:#6B7280}
+@media print{body{padding:16px}.cover{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+</style></head><body>
+<div class="cover">
+  <p style="font-size:10px;opacity:.6;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px">Plan de Desarrollo Individual · Italcol Group</p>
+  <h1>${nombre}</h1>
+  <p>${data.empresa||''} · Jefe: ${data.jefe||'—'} · Vigencia: ${data.inicio||'—'} → ${data.fin||'—'}</p>
+  <div class="badge">Ruta ${data.ruta} — ${rutaLabel}</div>
+</div>
+<div class="section">
+  <div class="sec-title">Diagnóstico</div>
+  <div class="grid2">
+    <div class="field"><label>Perfil de sucesión</label><span>${data.sucesion||'—'}</span></div>
+    <div class="field"><label>Potencial WPI</label><span>${persona?.pot||'—'}/10</span></div>
+    <div class="field"><label>Nine Box</label><span>${persona?.zona||'—'}</span></div>
+    <div class="field"><label>Veredicto sucesión</label><span>${data.veredicto_suc||'—'}</span></div>
+  </div>
+  <div class="field" style="margin-top:10px"><label>Oportunidades de desarrollo</label><span style="font-weight:400">${data.brechas?.join(' · ')||'—'}</span></div>
+  <div class="field" style="margin-top:8px"><label>Superpoderes / Fortalezas</label><span style="font-weight:400">${data.fortalezas||'—'}</span></div>
+</div>
+<div class="section">
+  <div class="sec-title">Plan 70-20-10</div>
+  <div class="ruta-banner"><div style="font-size:12px;font-weight:700;color:${rColor}">Ruta ${data.ruta} — ${rutaLabel}</div></div>
+  <p style="font-size:11px;color:#1B2A6B;font-weight:700;margin-bottom:8px">70% — Experiencias en el trabajo</p>
+  ${['1','2','3'].map(n=>`<div class="act"><div class="act-num">Acción ${n}</div><div class="act-text">${acts['70-'+n]||'—'}</div></div>`).join('')}
+  <p style="font-size:11px;color:#E8631A;font-weight:700;margin:14px 0 8px">20% — Aprendizaje social</p>
+  ${['1','2','3'].map(n=>`<div class="act b20"><div class="act-num">Acción ${n}</div><div class="act-text">${acts['20-'+n]||'—'}</div></div>`).join('')}
+  <p style="font-size:11px;color:#2D7D32;font-weight:700;margin:14px 0 8px">10% — Formación formal</p>
+  ${['1','2','3'].map(n=>`<div class="act b10"><div class="act-num">Acción ${n}</div><div class="act-text">${acts['10-'+n]||'—'}</div></div>`).join('')}
+</div>
+<div class="section">
+  <div class="sec-title">Seguimiento y cierre</div>
+  <div class="field"><label>Evidencias y logros</label><span style="font-weight:400;white-space:pre-wrap">${data.seg_evidencias||'—'}</span></div>
+  <div class="field" style="margin-top:8px"><label>¿Qué aprendí?</label><span style="font-weight:400;white-space:pre-wrap">${data.aprendizajes||'—'}</span></div>
+  <div class="field" style="margin-top:8px"><label>¿Qué logré?</label><span style="font-weight:400;white-space:pre-wrap">${data.logros||'—'}</span></div>
+  <div class="field" style="margin-top:8px"><label>Veredicto del jefe</label><span>${data.veredicto||'—'}</span></div>
+</div>
+<div class="section">
+  <div class="sec-title">Firmas de validación</div>
+  <div class="firma-row">
+    <div class="firma-box">Colaborador<br><br>${data.firma_colaborador||'_____________________'}</div>
+    <div class="firma-box">Jefe directo<br><br>${data.firma_jefe||'_____________________'}</div>
+    <div class="firma-box">Formación & Cultura<br><br>${data.firma_rrhh||'_____________________'}</div>
+  </div>
+</div>
+<div style="text-align:center;font-size:10px;color:#9CA3AF;margin-top:28px;border-top:1px solid #E5E7EB;padding-top:10px">
+  Generado el ${fecha} · Italcol Group — Dirección de Formación, Desarrollo y Cultura
+</div>
+</body></html>`;
+
+  const blob = new Blob([html], {type:'text/html;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `PDI_${nombre.replace(/ /g,'_')}_${fecha.replace(/\//g,'-')}.html`;
+  a.click(); URL.revokeObjectURL(url);
+  showToast('PDI exportado — ábrelo en Word o imprímelo como PDF');
+}
+
+function exportarPDI() { exportarPDIWord(); }
+
+// ── TOAST ──────────────────────────────────────────────────────────
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ── SYNC EXCEL ITALCOL via Power Automate ──────────────────────────
+const PA_URL = "https://defaultaeace1ffab234a20926899bba1f823.1e.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/9459e9e7bd774649a4e9093b8e0d0cac/triggers/manual/paths/invoke?api-version=1";
+async function syncToExcel(data) {
+  try {
+    const r = await fetch(PA_URL, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+    return r.ok || r.status === 202;
+  } catch(e) { return false; }
+}
+</script>
+</body>
+</html>
